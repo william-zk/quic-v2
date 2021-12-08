@@ -4,8 +4,8 @@
 
 QUIC                                                             M. Duke
 Internet-Draft                                                  F5, Inc.
-Intended status: Standards Track                        23 November 2021
-Expires: 27 May 2022
+Intended status: Standards Track                         8 December 2021
+Expires: 11 June 2022
 
 
                              QUIC Version 2
@@ -28,9 +28,18 @@ Abstract
    mailing list quic@ietf.org or on the GitHub repository which contains
    the draft: https://github.com/quicwg/quic-v2.
 
-Discussion Venues
+About This Document
 
    This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at https://quicwg.org/
+   quic-v2/draft-ietf-quic-v2.html.  Status information for this
+   document may be found at https://datatracker.ietf.org/doc/draft-ietf-
+   quic-v2/.
+
+   Discussion of this document takes place on the QUIC Working Group
+   mailing list (mailto:quic@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/browse/quic/.
 
    Source for this draft and an issue tracker can be found at
    https://github.com/quicwg/quic-v2.
@@ -50,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 May 2022.
+   This Internet-Draft will expire on 11 June 2022.
 
 Copyright Notice
 
