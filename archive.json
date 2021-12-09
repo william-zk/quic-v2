@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-12-05T00:28:09.638074+00:00",
+  "timestamp": "2021-12-09T00:26:22.335730+00:00",
   "repo": "quicwg/quic-v2",
   "labels": [
     {
@@ -310,9 +310,83 @@
       "labels": [],
       "body": "We now have some implementation experience, and got interop between 2 implementations. That's great, but the process was difficult because the transition is somehow under specified. There was a lot of discussion as issues with the compatible version negotiation draft:\r\n\r\n* [Specify impact on 0-RTT, session resume tickets, etc.](https://github.com/quicwg/version-negotiation/issues/68)\r\n* [Security issue when upgrading based on received version in header](https://github.com/quicwg/version-negotiation/issues/70)\r\n* [Validation on incompatible negotiation](https://github.com/quicwg/version-negotiation/issues/73)\r\n\r\nThese issues cannot be fully addressed in the compatible version negotiation draft, which has to be version independent. Instead, they need to be addressed in specific drafts. The V2 draft, for example, should specify exactly what happens during the version negotiation. My understanding is that when version negotiation succeeds, we will see something like:\r\n\r\n- Client sends a first flight composed of Version 1 initial packets\r\n- Server may send Version 1 initial packets containing acknowledgement, e.g., to manage losses of Initial packets\r\n- At some point, the server will have received and parsed the transport parameters, and decided to upgrade to V2\r\n- After that point, server will send version 2 packets (Initial, Handshake, 1RTT)\r\n- Client will receive version 2 packets and should be ready to process them before the negotiation completes\r\n- The transport parameters will arrive in V2 handshake packets, after which the negotiation is done.\r\n\r\nThere are quite a few potential issues that need resolution:\r\n\r\n1) As explained above, in case of successful negotiation, the client expects the server to start sending V2 packets asap. Shall it ignore V1 packets as soon as it received V2 packets? Should in check version numbers in Initial packets, in a process similar to key updates?\r\n2) If the client receives transport parameters on a version 2 packet, what shall it do if the chosen version is V1?\r\n3) And vice versa?\r\n4) If the server receives V2 handshake packets from the client, shall it conclude that the negotiation is successful?\r\n5) In case of session resumption, does the client resume using V1 or V2? I think the answer to that question depends on the content of the \"supported versions\" list provided by the server. If it includes V2, then the server is ready to receive V2 packets. If the server is part of a server farm with partial deployment of V2, it should not say that V2 is ready. The answer may also depend on local conditions at the client.\r\n6) If the client resumes using V1, it will send 0-RTT packets using V1. The server will receive these packets after the client's initial packets, and thus after receiving the transport parameters and completing the version upgrade. Should the server drop these packets? Or should it continue accept them until the handshake completes?\r\n7) On the client side, there will be a delay between completing the negotiation and finalizing the handshake. The client may want to send 0-RTT packets during that interval. Shall it send those using V1 or V2?\r\n\r\n\r\n",
       "createdAt": "2021-12-04T21:14:50Z",
-      "updatedAt": "2021-12-04T21:14:50Z",
+      "updatedAt": "2021-12-08T06:50:22Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The most literal answer to your question is, \"of course all v1 can be interchanged with v2, since they're identical\". But I'm going to answer the more interesting question of what precise questions a new version has to answer.\r\n\r\nAFAICT, in the v1->v2 case, (assuming all the support is present) there are four possible responses from the server:\r\n1) a v2 Initial with ACK and/or ServerHello\r\n2) a v1 Initial with ACK, followed by a v2 Initial with ServerHello\r\n3) a v1 Retry (a v2 Retry would also be correct, but silly for the server to do things that way)\r\n4) a v1 Initial with ACK, followed by nothing (because some of the client hello was lost)\r\nI believe this generalizes to all transitions v1->v_n.\r\n\r\nSo clearly the client can't draw any conclusions about the ultimate version until it sees the server hello, or a v2 packet of any kind. It can't fully authenticate the handshake until we get 1-RTT keys.\r\n\r\nSo to answer your questions:\r\n(1) yes, ignore v1 once you get v2 -- you don't need the Initial ACK anyway\r\n(2) and (3) if the chosen version in the TP doesn't match the QUIC header, this is a VN violation, no? Shouldn't this be handled in the VN draft?\r\n(4) I would think that any client packet with v2 and the correct keys would do the trick.\r\n(5) The two elements of this are the NEW_TOKEN token and the TLS session ticket. The hard part here is that the contents of this are not in any version spec; if QUIC and TLS implementations put version specific things in there, then it won't work. IIUC in general the session ticket wouldn't include anything derived from the version-dependent HKDF labels, so it ought to work.\r\n(6) and (7) I believe the server has to handle v1 0RTT till the handshake is over, as it can't guarantee that 0RTT arriving after the 2nd flight was sent after that flight. The client could switch its 0RTT to v2 once negotiated -- I have no strong opinion if that complexity is worthwhile.\r\n\r\nI don't think putting these responses in a PR is the right move -- I'd like to clarify what properly should go in the VN draft and what should rest here.",
+          "createdAt": "2021-12-07T20:23:46Z",
+          "updatedAt": "2021-12-07T20:23:46Z"
+        },
+        {
+          "author": "kazu-yamamoto",
+          "authorAssociation": "NONE",
+          "body": "> (1) yes, ignore v1 once you get v2 -- you don't need the Initial ACK anyway\r\n\r\nMinor fix. In @huitema's example, ACK in V1 from the server is received by the client before any V2 packets. So, the client can handle it anyway.",
+          "createdAt": "2021-12-08T01:47:33Z",
+          "updatedAt": "2021-12-08T01:47:33Z"
+        },
+        {
+          "author": "kazu-yamamoto",
+          "authorAssociation": "NONE",
+          "body": "> (6) and (7) I believe the server has to handle v1 0RTT till the handshake is over, as it can't guarantee that 0RTT arriving after the 2nd flight was sent after that flight. The client could switch its 0RTT to v2 once negotiated -- I have no strong opinion if that complexity is worthwhile.\r\n\r\nThis is probably a good idea. We can say that 0RTT belongs to the previous connection of V1.\r\n\r\n@huitema If you agree, let's implement this and do interop.",
+          "createdAt": "2021-12-08T01:51:00Z",
+          "updatedAt": "2021-12-08T01:51:00Z"
+        },
+        {
+          "author": "kazu-yamamoto",
+          "authorAssociation": "NONE",
+          "body": "> a v1 Retry (a v2 Retry would also be correct, but silly for the server to do things that way)\r\n\r\nWe need to prohibit v2 Retry since a v1-only client cannot retry if v2 Retry is received.",
+          "createdAt": "2021-12-08T01:57:44Z",
+          "updatedAt": "2021-12-08T01:57:44Z"
+        },
+        {
+          "author": "kazu-yamamoto",
+          "authorAssociation": "NONE",
+          "body": "> If the client receives transport parameters on a version 2 packet, what shall it do if the chosen version is V1?\r\n\r\nWhen a client see V2 in a long header, it switches to V2 keys. This switch is allowed only once. After handshake is completed, the client checks if the version for keys and Chosen Version is the same.",
+          "createdAt": "2021-12-08T02:01:13Z",
+          "updatedAt": "2021-12-08T02:01:13Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "OK, I will test the 0-RTT part internally first. There are timing issues in the server code, depending on whether the 0-RTT key is produced before the negotiation or after it.",
+          "createdAt": "2021-12-08T05:55:37Z",
+          "updatedAt": "2021-12-08T05:55:37Z"
+        },
+        {
+          "author": "kazu-yamamoto",
+          "authorAssociation": "NONE",
+          "body": "@huitema The idea for 0-RTT works perfectly on my local tests. I will brush up the code tomorrow and set up a public server.",
+          "createdAt": "2021-12-08T06:50:22Z",
+          "updatedAt": "2021-12-08T06:50:22Z"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "id": "I_kwDOFX7TQc5ABJPl",
+      "title": "Test vectors",
+      "url": "https://github.com/quicwg/quic-v2/issues/17",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "RFC 9001 had 'em and they were very helpful.\r\n\r\nYou might find [this script](https://gist.github.com/martinthomson/1f000d3e389b0bf1308e1043e141fbb9) to be useful.",
+      "createdAt": "2021-12-08T05:59:38Z",
+      "updatedAt": "2021-12-08T06:01:37Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "body": "Note that the TLS messages in that script hasn't been changed to include the version negotiation transport parameters.  If you want to publish it, then you'll need to work out how to do that, sorry.",
+          "createdAt": "2021-12-08T06:01:36Z",
+          "updatedAt": "2021-12-08T06:01:36Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -477,6 +551,42 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 16,
+      "id": "PR_kwDOFX7TQc4viLq5",
+      "title": "Semi-automatic update of venue information",
+      "url": "https://github.com/quicwg/quic-v2/pull/16",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-12-08T05:00:29Z",
+      "updatedAt": "2021-12-08T05:03:29Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "4557dc73f1b3caa8f7b81077791babd6d6f5f153",
+      "headRepository": "martinthomson/quic-v2",
+      "headRefName": "venue",
+      "headRefOid": "8fb8a54a80a4160e3eed2210cca624315096409b",
+      "closedAt": "2021-12-08T05:03:29Z",
+      "mergedAt": "2021-12-08T05:03:29Z",
+      "mergedBy": "martinduke",
+      "mergeCommit": {
+        "oid": "a9ffd031aa43cd913b9b7b3d5e1dbdee8ad8a93e"
+      },
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "body": "(If you are looking to do this for yourself on other repos, you can copy the venue fields from https://github.com/martinthomson/internet-draft-template/blob/main/draft-todo-yourname-protocol.md into your draft and run `make update-venue`.)",
+          "createdAt": "2021-12-08T05:01:22Z",
+          "updatedAt": "2021-12-08T05:01:22Z"
+        }
+      ],
+      "reviews": []
     }
   ]
 }
