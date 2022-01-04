@@ -3,9 +3,9 @@
 
 
 QUIC                                                             M. Duke
-Internet-Draft                                                  F5, Inc.
-Intended status: Standards Track                        22 November 2021
-Expires: 26 May 2022
+Internet-Draft                                                Google LLC
+Intended status: Standards Track                          4 January 2022
+Expires: 8 July 2022
 
 
                              QUIC Version 2
@@ -26,18 +26,23 @@ Abstract
 
    Discussion of this work is encouraged to happen on the QUIC IETF
    mailing list quic@ietf.org or on the GitHub repository which contains
-   the draft: https://github.com/martinduke/draft-duke-quic-v2.
+   the draft: https://github.com/quicwg/quic-v2.
 
-Discussion Venues
+About This Document
 
    This note is to be removed before publishing as an RFC.
 
-   Discussion of this document takes place on the mailing list
-   (quic@ietf.org), which is archived at
+   The latest revision of this draft can be found at https://quicwg.org/
+   quic-v2/draft-ietf-quic-v2.html.  Status information for this
+   document may be found at https://datatracker.ietf.org/doc/draft-ietf-
+   quic-v2/.
+
+   Discussion of this document takes place on the QUIC Working Group
+   mailing list (mailto:quic@ietf.org), which is archived at
    https://mailarchive.ietf.org/arch/browse/quic/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/martinduke/draft-duke-quic-v2.
+   https://github.com/quicwg/quic-v2.
 
 Status of This Memo
 
@@ -54,11 +59,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 May 2022.
+   This Internet-Draft will expire on 8 July 2022.
 
 Copyright Notice
 
-   Copyright (c) 2021 IETF Trust and the persons identified as the
+   Copyright (c) 2022 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -150,7 +155,7 @@ Table of Contents
       5.1), header protection keys (Sec 5.4), Retry Integrity Tag keys
       (Sec 5.8), and key updates (Sec 6.1) change from "quic key" to
       "quicv2 key", from "quic iv" to "quicv2 iv", from "quic hp" to
-      "quicv2 hp", and from "quic ku" to "quicv2 ku," to meet the
+      "quicv2 hp", and from "quic ku" to "quicv2 ku", to meet the
       guidance for new versions in Section 9.6 of that document.
 
    *  The key and nonce used for the Retry Integrity Tag (Sec 5.8 of
@@ -198,6 +203,9 @@ nonce = 0x141b99c239b03e785d6a2e9f
    Application Layer Protocol Negotiation (ALPN) ([RFC7301]) codepoints
    specified to operate over QUICv1 can also operate over this version
    of QUIC.
+
+   All QUIC extensions defined to work with version 1 also work with
+   version 2.
 
 7.  Security Considerations
 
@@ -277,7 +285,9 @@ A.1.  since draft-duke-quic-v2-02
 
    *  Converted to adopted draft
 
-   *  Deleted references to possible improvements
+   *  Deleted references to QUIC improvements
+
+   *  Clarified status of QUIC extensions
 
 A.2.  since draft-duke-quic-v2-01
 
@@ -296,6 +306,6 @@ A.3.  since draft-duke-quic-v2-00
 Author's Address
 
    Martin Duke
-   F5, Inc.
+   Google LLC
 
    Email: martin.h.duke@gmail.com
