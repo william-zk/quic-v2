@@ -3,9 +3,9 @@
 
 
 QUIC                                                             M. Duke
-Internet-Draft                                                  F5, Inc.
-Intended status: Standards Track                         8 December 2021
-Expires: 11 June 2022
+Internet-Draft                                                Google LLC
+Intended status: Standards Track                          4 January 2022
+Expires: 8 July 2022
 
 
                              QUIC Version 2
@@ -59,11 +59,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 June 2022.
+   This Internet-Draft will expire on 8 July 2022.
 
 Copyright Notice
 
-   Copyright (c) 2021 IETF Trust and the persons identified as the
+   Copyright (c) 2022 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -306,6 +306,6 @@ A.3.  since draft-duke-quic-v2-00
 Author's Address
 
    Martin Duke
-   F5, Inc.
+   Google LLC
 
    Email: martin.h.duke@gmail.com
