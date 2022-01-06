@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-12-09T00:26:22.335730+00:00",
+  "timestamp": "2022-01-06T00:29:38.552537+00:00",
   "repo": "quicwg/quic-v2",
   "labels": [
     {
@@ -223,9 +223,17 @@
       "labels": [],
       "body": "It would be a simple matter to switch around the packet type codes in long headers, e.g.\r\n\r\n0x0 = Retry\r\n0x1 = Handshake\r\n0x2 = 0-RTT\r\n0x3 = Initial\r\n\r\nso no one ossifies on 0x0 = Initial.",
       "createdAt": "2021-04-29T15:58:09Z",
-      "updatedAt": "2021-04-29T15:58:09Z",
+      "updatedAt": "2022-01-05T04:22:48Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "body": "I'm ambivalent on this.  It's fairly trivial to have the long header parsed in version-specific fashion, so it's easy to implement, but I'm not sure how much value it has.  It also makes reading packets slightly harder.",
+          "createdAt": "2022-01-05T04:22:48Z",
+          "updatedAt": "2022-01-05T04:22:48Z"
+        }
+      ]
     },
     {
       "number": 9,
@@ -286,7 +294,7 @@
       "labels": [],
       "body": "Thank you for this work.\r\n\r\nCan quic v2 server accept a v1 0-RTT packet via Compatible Version Negotiation?\r\n\r\nIf I understand correctly, The [version negotiation specification](https://quicwg.org/version-negotiation/draft-ietf-quic-version-negotiation.html#name-interaction-with-0-rtt) says that \"future versions will determine how to handle it.\" Even if the server accepts v1 packets as is, I would think the handling needs to be described in v2.",
       "createdAt": "2021-11-29T16:17:06Z",
-      "updatedAt": "2021-12-02T00:59:05Z",
+      "updatedAt": "2022-01-05T06:08:11Z",
       "closedAt": null,
       "comments": [
         {
@@ -295,6 +303,13 @@
           "body": "Developers are actually puzzled.\r\nSee https://github.com/quicwg/version-negotiation/issues/68",
           "createdAt": "2021-12-02T00:59:05Z",
           "updatedAt": "2021-12-02T00:59:05Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "body": "Moving the discussion here, I think that 0-RTT is not as clear-cut as it seems.\r\n\r\nWhen doing a compatible upgrade from v1 to v2, a server makes the switch when it processes the ClientHello (that is, all Initial packets from the client to a first approximation).  It is relatively easy for the server to make the switch cleanly at that point because it doesn't need to read any more Initial packets and all other packets will be v2 from then on.\r\n\r\nA client makes the switch based on seeing a v2 packet.  It might receive some v1 Initial packets, but the one containing a ServerHello will be v2.  If the client is sending 0-RTT packets, it might need to send them until it receives all of the Handshake packets from the server.  That is, it might be some time.\r\n\r\nFor a client in that state, it doesn't really make sense to switch to sending v2 0-RTT packets, but if it doesn't it will be intermixing transmission of v1 0-RTT packets and v2 Handshake packets.  This is awkward because there is no clean cut-over.\r\n\r\nIn my implementation, I also have to deal with stack integration issues that make installing the right 0-RTT keys difficult.\r\n\r\nI ultimately opted to just reject 0-RTT if there was a version change.  The number of cases in which you might want to use 0-RTT and you don't already know what version the server wants to use are very limited.  Basically, this only happens if you are doing 0-RTT across an upgrade of the server.  Losing 0-RTT in that case seems tolerable.",
+          "createdAt": "2022-01-05T06:08:11Z",
+          "updatedAt": "2022-01-05T06:08:11Z"
         }
       ]
     },
@@ -387,6 +402,62 @@
           "updatedAt": "2021-12-08T06:01:36Z"
         }
       ]
+    },
+    {
+      "number": 20,
+      "id": "I_kwDOFX7TQc5BMmLL",
+      "title": "Request provisional version number allocation",
+      "url": "https://github.com/quicwg/quic-v2/issues/20",
+      "state": "OPEN",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Get one from IANA",
+      "createdAt": "2022-01-04T23:00:59Z",
+      "updatedAt": "2022-01-04T23:01:44Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I'll ask for 0x70 9a 50 c4 .",
+          "createdAt": "2022-01-04T23:01:44Z",
+          "updatedAt": "2022-01-04T23:01:44Z"
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "id": "I_kwDOFX7TQc5BMmti",
+      "title": "Packet injection during Compatible VN",
+      "url": "https://github.com/quicwg/quic-v2/issues/21",
+      "state": "OPEN",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "There might be security considerations related to injecting packets during compatible VN. They may not be worse than other Initial injection attacks, but think it through.",
+      "createdAt": "2022-01-04T23:05:12Z",
+      "updatedAt": "2022-01-04T23:05:12Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 23,
+      "id": "I_kwDOFX7TQc5BM45Y",
+      "title": "Retry and compatible upgrade",
+      "url": "https://github.com/quicwg/quic-v2/issues/23",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "It is necessary to specify how retry works when a compatible upgrade is used.\r\n\r\nThe easiest way to specify this is to say that Retry can be sent in version 1, but the validation is performed as though a version 2 retry was sent.  That's what I've seen implemented thus far.",
+      "createdAt": "2022-01-05T01:40:11Z",
+      "updatedAt": "2022-01-05T01:40:11Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -466,7 +537,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2021-11-22T22:53:42Z",
-      "updatedAt": "2021-11-22T22:54:37Z",
+      "updatedAt": "2022-01-04T21:19:41Z",
       "baseRepository": "quicwg/quic-v2",
       "baseRefName": "main",
       "baseRefOid": "79f0607cbbf8331a6ee6d2705fa00ca39909d49d",
@@ -494,7 +565,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2021-11-22T23:05:40Z",
-      "updatedAt": "2021-11-22T23:06:25Z",
+      "updatedAt": "2022-01-04T21:19:42Z",
       "baseRepository": "quicwg/quic-v2",
       "baseRefName": "main",
       "baseRefOid": "a834768d2dddaab2b77478e3bb4b9b68be4c0fd4",
@@ -587,6 +658,325 @@
         }
       ],
       "reviews": []
+    },
+    {
+      "number": 18,
+      "id": "PR_kwDOFX7TQc4wh8yj",
+      "title": "change author affiliation",
+      "url": "https://github.com/quicwg/quic-v2/pull/18",
+      "state": "MERGED",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2022-01-04T21:13:38Z",
+      "updatedAt": "2022-01-04T21:19:39Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "a9ffd031aa43cd913b9b7b3d5e1dbdee8ad8a93e",
+      "headRepository": "quicwg/quic-v2",
+      "headRefName": "author",
+      "headRefOid": "ba2723ed32b526669e18dc92a05f8e030881761b",
+      "closedAt": "2022-01-04T21:18:17Z",
+      "mergedAt": "2022-01-04T21:18:17Z",
+      "mergedBy": "martinduke",
+      "mergeCommit": {
+        "oid": "4e7ae98a2ec5089139693b7135a0ebcbc5177c0c"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 19,
+      "id": "PR_kwDOFX7TQc4wiJlU",
+      "title": "Rules for compatible VN",
+      "url": "https://github.com/quicwg/quic-v2/pull/19",
+      "state": "OPEN",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #14 and fixes #15.\r\n\r\nI could be persuaded that some of the choices made here are not the best.",
+      "createdAt": "2022-01-04T22:58:16Z",
+      "updatedAt": "2022-01-05T03:00:39Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "4e7ae98a2ec5089139693b7135a0ebcbc5177c0c",
+      "headRepository": "quicwg/quic-v2",
+      "headRefName": "update-narrative",
+      "headRefOid": "5cfe3115d2587d83f554b9d1d6c8ae8517c43fa1",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "body": "Oops, I posted #24, which is almost exactly the same.  My bad.\r\n\r\nThe 0-RTT thing is one I might contest here.  It is possible to accept 0-RTT if you have a compatible upgrade, but I'm not sure that you ever need it.  The situations in which you can use 0-RTT without knowing what version is in use are few.  All the client has to do is remember the negotiated version from last time and use that version.",
+          "createdAt": "2022-01-05T03:00:39Z",
+          "updatedAt": "2022-01-05T03:00:39Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFX7TQc4yT7U-",
+          "commit": {
+            "abbreviatedOid": "5cfe311"
+          },
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "The text reflects the consensus so far. I have to update my implementation to ensure that it follows these rules exactly, in particular for 0RTT, might add comments when that implementation is tested.",
+          "createdAt": "2022-01-04T23:04:56Z",
+          "updatedAt": "2022-01-04T23:04:56Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOFX7TQc4wiZd4",
+      "title": "Improve cross referencing",
+      "url": "https://github.com/quicwg/quic-v2/pull/22",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "This uses kramdown tricks to make real links for the section references\r\nto RFC 9001 and uses a nicer label for those.",
+      "createdAt": "2022-01-05T01:37:37Z",
+      "updatedAt": "2022-01-05T02:51:15Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "4e7ae98a2ec5089139693b7135a0ebcbc5177c0c",
+      "headRepository": "martinthomson/quic-v2",
+      "headRefName": "xrefs",
+      "headRefOid": "9b7450a80cd33ea93f81756cbe75b7443a895a50",
+      "closedAt": "2022-01-05T02:51:15Z",
+      "mergedAt": "2022-01-05T02:51:15Z",
+      "mergedBy": "martinduke",
+      "mergeCommit": {
+        "oid": "a28650478ef0dc3886d786ba31b810ec3fc830de"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFX7TQc4yURPY",
+          "commit": {
+            "abbreviatedOid": "9b7450a"
+          },
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-01-05T02:51:05Z",
+          "updatedAt": "2022-01-05T02:51:05Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "id": "PR_kwDOFX7TQc4wibB1",
+      "title": "What I learned about compatible versions",
+      "url": "https://github.com/quicwg/quic-v2/pull/24",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "This is what the version negotiation draft requires of a document that\r\ndefines compatible version negotiation.  The answers I've used here are\r\nbased on my own experience implementing this.  Others might have a\r\ndifferent experience.\r\n\r\nCloses #23.",
+      "createdAt": "2022-01-05T01:58:15Z",
+      "updatedAt": "2022-01-05T22:50:46Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "4e7ae98a2ec5089139693b7135a0ebcbc5177c0c",
+      "headRepository": "martinthomson/quic-v2",
+      "headRefName": "vn",
+      "headRefOid": "38717e81b0b7c83204ed75ac4b33e34802e7fe36",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "body": "@huitema, does this match your understanding?",
+          "createdAt": "2022-01-05T01:59:06Z",
+          "updatedAt": "2022-01-05T01:59:06Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Oh, I see the Retry bit now",
+          "createdAt": "2022-01-05T03:27:12Z",
+          "updatedAt": "2022-01-05T03:27:12Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFX7TQc4yURs8",
+          "commit": {
+            "abbreviatedOid": "38717e8"
+          },
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Huh. #19 and #24 post the same day. @huitema suggested #19 matches his experience.\r\n\r\nAlso, this doesn't seem to address the bit about Retry validation in #23?\r\n\r\nTomorrow I can see if there's anything to synthesize between the two.",
+          "createdAt": "2022-01-05T02:56:29Z",
+          "updatedAt": "2022-01-05T02:56:29Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4yURxM",
+          "commit": {
+            "abbreviatedOid": "38717e8"
+          },
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-05T02:57:17Z",
+          "updatedAt": "2022-01-05T02:58:02Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "Given the differing labels, all the protection is different, no?",
+              "createdAt": "2022-01-05T02:57:17Z",
+              "updatedAt": "2022-01-05T02:58:02Z"
+            },
+            {
+              "originalPosition": 40,
+              "body": "Is there a reason for this? It seems like a disincentive to upgrade.",
+              "createdAt": "2022-01-05T02:57:58Z",
+              "updatedAt": "2022-01-05T02:58:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4yUSKC",
+          "commit": {
+            "abbreviatedOid": "38717e8"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-05T03:01:28Z",
+          "updatedAt": "2022-01-05T03:01:28Z",
+          "comments": [
+            {
+              "originalPosition": 26,
+              "body": "Good point.",
+              "createdAt": "2022-01-05T03:01:28Z",
+              "updatedAt": "2022-01-05T03:01:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4yUSiM",
+          "commit": {
+            "abbreviatedOid": "38717e8"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-05T03:05:19Z",
+          "updatedAt": "2022-01-05T03:05:19Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "Maybe.  Though the number of cases where you get to deploy a whole new version and continue to use 0-RTT across the upgrade is small.  You will mostly have a previous connection in the negotiated version, so you can remember which was used and attempt that straight up.  It is only during the rollout of v2 that you need to worry about maybe accepting v2 and rejecting 0-RTT.\r\n\r\nIn our stack, it is completely non-trivial to calculate v1 0-RTT keys once you have negotiated v2.  Given how narrow the applicability is, it seems much safer to reject.\r\n\r\nOf course, you could just make rejection discretionary.",
+              "createdAt": "2022-01-05T03:05:19Z",
+              "updatedAt": "2022-01-05T03:05:19Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4yUVdH",
+          "commit": {
+            "abbreviatedOid": "38717e8"
+          },
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-05T03:42:08Z",
+          "updatedAt": "2022-01-05T03:42:08Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "Let see. To Martin's point, I have only partially tested usage of 0-RTT with resumption, always resuming with V1.\r\n\r\nA server negotiates 0-RTT if it has received a session resumption ticket during the previous handshake. Session tickets are carried in crypto frames in 1-RTT packets, thus after the transport parameters have been negotiated. It seems we can have the following:\r\n\r\n1) Client initiates a V1 session, also proposes V2, server negotiates V2, indicates V2 support, and sends a resumption ticket.\r\n\r\n2) Client initiates a V1 session, also proposes V2, server negotiates V2, does not indicates V2 support, and sends a resumption ticket.\r\n\r\n3) Client initiates a V1 session, also proposes V2, server negotiates V1 and sends a resumption ticket.\r\n\r\n4) Client initiates a V1 session, does not propose alternative. Server sends a resumption ticket.\r\n\r\nIt seems to me that in case #1, the client should resume a session using V2, including for 0-RTT. In case #2, #3 and #4, it should resume using V1. Case #4 is plain V1, which implies support of 0-RTT. It would be bizarre to allow 0RTT in case #4 but not in cases #2 and #3.",
+              "createdAt": "2022-01-05T03:42:08Z",
+              "updatedAt": "2022-01-05T03:42:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4yUWHz",
+          "commit": {
+            "abbreviatedOid": "38717e8"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-05T03:50:00Z",
+          "updatedAt": "2022-01-05T03:50:01Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "I'm not following case 2.  Did you mean that the server negotiates v2, but does not support v1?  You can't use compatible negotiation for that, I think.\r\n\r\nCases 3 and 4 are clear cut cases where the only mutually supported version is v1, just that one has VN support and the other doesn't.\r\n\r\nThe case that is potentially interesting is this: Client offers v1 and v2.  Server only supports v1 so it uses that and sends a 0-RTT-capable ticket.  Server upgrades to add v2 support.  Client then makes a new connection with v1 and 0-RTT.  Server is forced to choose between a compatible upgrade and 0-RTT.",
+              "createdAt": "2022-01-05T03:50:01Z",
+              "updatedAt": "2022-01-05T03:50:01Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4yXmlr",
+          "commit": {
+            "abbreviatedOid": "38717e8"
+          },
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-05T20:46:35Z",
+          "updatedAt": "2022-01-05T20:46:36Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "The server response contains the selected version and a list of supported versions. Case #2 happens when the selected version is V2, but the list of supported versions only contains V1. That would be a reasonable thing to do by a server in a big farm. The server itself supports V2, but not all servers in the farm do, so the server is telling the client that it would be reasonable to use V1 in the new connections.",
+              "createdAt": "2022-01-05T20:46:35Z",
+              "updatedAt": "2022-01-05T20:46:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4yX8SY",
+          "commit": {
+            "abbreviatedOid": "38717e8"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-05T22:50:46Z",
+          "updatedAt": "2022-01-05T22:50:46Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "Good point.  I missed that nuance.  That increases the potential value of doing 0-RTT in the original version.",
+              "createdAt": "2022-01-05T22:50:46Z",
+              "updatedAt": "2022-01-05T22:50:46Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
