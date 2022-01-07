@@ -1025,7 +1025,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Duke</td>
-<td class="center">Expires 9 July 2022</td>
+<td class="center">Expires 11 July 2022</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1038,12 +1038,12 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <dd class="internet-draft">draft-ietf-quic-v2-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-01-05" class="published">5 January 2022</time>
+<time datetime="2022-01-07" class="published">7 January 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2022-07-09">9 July 2022</time></dd>
+<dd class="expires"><time datetime="2022-07-11">11 July 2022</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1102,7 +1102,7 @@ contains the draft:
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 9 July 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 11 July 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1142,6 +1142,11 @@ contains the draft:
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-version-negotiation-conside" class="xref">Version Negotiation Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-compatible-negotiation-requ" class="xref">Compatible Negotiation Requirements</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-ossification-considerations" class="xref">Ossification Considerations</a></p>
@@ -1286,9 +1291,36 @@ version downgrade attacks.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <p id="section-4-2">Note that version 2 meets that document's definition of a compatible version
 with version 1. Therefore, v2-capable servers MUST use compatible version
 negotiation unless they do not support version 1.<a href="#section-4-2" class="pilcrow">¶</a></p>
-<p id="section-4-3">As version 1 support is more likely than version 2 support, a client SHOULD use
-QUIC version 1 for its original version unless it has out-of-band knowledge that
-the server supports version 2.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<div id="compatible-negotiation-requirements">
+<section id="section-4.1">
+        <h3 id="name-compatible-negotiation-requ">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-compatible-negotiation-requ" class="section-name selfRef">Compatible Negotiation Requirements</a>
+        </h3>
+<p id="section-4.1-1">Compatible version negotiation between versions 1 and 2 follow the same
+requirements in either direction. This section uses the terms "original
+version" and "negotiated version" from <span>[<a href="#QUIC-VN" class="xref">QUIC-VN</a>]</span>.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">If the server elects to send a Retry packet, it MUST do so using the original
+version.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">The server SHOULD start sending its Initial packets using the negotiated
+version as soon as it decides to change. Note that the server might send some
+Initial packets using the original version.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">Once the client has processed a packet using the negotiated version, it SHOULD
+send subsequent Initial packets using that version. The server MUST NOT discard
+its original version Initial receive keys until it successfully processes a
+packet with the negotiated version.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-5">Both endpoints MUST send Handshake or 1-RTT packets using the negotiated
+version. An endpoint MUST drop packets using any other version. Endpoints have
+no need to generate the keying material that would allow them to decrypt or
+authenticate these packets.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.1-6">If the server's version_information transport parameter does not contain a
+Chosen Version field equivalent to the version in the server's Handshake packet
+headers, the client MUST terminate the connection with a
+VERSION_NEGOTIATION_ERROR.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
+<p id="section-4.1-7">The client MUST NOT send 0-RTT packets using the negotiated version, even after
+processing a packet of that version from the server. Servers can apply original
+version 0-RTT packets to a connection without additional considerations.<a href="#section-4.1-7" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="ossification-considerations">
