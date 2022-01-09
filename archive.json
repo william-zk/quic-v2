@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-01-06T00:29:38.552537+00:00",
+  "timestamp": "2022-01-09T00:29:20.486552+00:00",
   "repo": "quicwg/quic-v2",
   "labels": [
     {
@@ -287,15 +287,15 @@
       "id": "I_kwDOFX7TQc4_jV8O",
       "title": "Clarify about cross version 0-RTT via Compatible Version Negotiation",
       "url": "https://github.com/quicwg/quic-v2/issues/14",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "flano-yuki",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Thank you for this work.\r\n\r\nCan quic v2 server accept a v1 0-RTT packet via Compatible Version Negotiation?\r\n\r\nIf I understand correctly, The [version negotiation specification](https://quicwg.org/version-negotiation/draft-ietf-quic-version-negotiation.html#name-interaction-with-0-rtt) says that \"future versions will determine how to handle it.\" Even if the server accepts v1 packets as is, I would think the handling needs to be described in v2.",
       "createdAt": "2021-11-29T16:17:06Z",
-      "updatedAt": "2022-01-05T06:08:11Z",
-      "closedAt": null,
+      "updatedAt": "2022-01-07T20:29:43Z",
+      "closedAt": "2022-01-07T20:29:43Z",
       "comments": [
         {
           "author": "kazu-yamamoto",
@@ -318,15 +318,15 @@
       "id": "I_kwDOFX7TQc4_2rCC",
       "title": "Need to specify the update process",
       "url": "https://github.com/quicwg/quic-v2/issues/15",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "huitema",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "We now have some implementation experience, and got interop between 2 implementations. That's great, but the process was difficult because the transition is somehow under specified. There was a lot of discussion as issues with the compatible version negotiation draft:\r\n\r\n* [Specify impact on 0-RTT, session resume tickets, etc.](https://github.com/quicwg/version-negotiation/issues/68)\r\n* [Security issue when upgrading based on received version in header](https://github.com/quicwg/version-negotiation/issues/70)\r\n* [Validation on incompatible negotiation](https://github.com/quicwg/version-negotiation/issues/73)\r\n\r\nThese issues cannot be fully addressed in the compatible version negotiation draft, which has to be version independent. Instead, they need to be addressed in specific drafts. The V2 draft, for example, should specify exactly what happens during the version negotiation. My understanding is that when version negotiation succeeds, we will see something like:\r\n\r\n- Client sends a first flight composed of Version 1 initial packets\r\n- Server may send Version 1 initial packets containing acknowledgement, e.g., to manage losses of Initial packets\r\n- At some point, the server will have received and parsed the transport parameters, and decided to upgrade to V2\r\n- After that point, server will send version 2 packets (Initial, Handshake, 1RTT)\r\n- Client will receive version 2 packets and should be ready to process them before the negotiation completes\r\n- The transport parameters will arrive in V2 handshake packets, after which the negotiation is done.\r\n\r\nThere are quite a few potential issues that need resolution:\r\n\r\n1) As explained above, in case of successful negotiation, the client expects the server to start sending V2 packets asap. Shall it ignore V1 packets as soon as it received V2 packets? Should in check version numbers in Initial packets, in a process similar to key updates?\r\n2) If the client receives transport parameters on a version 2 packet, what shall it do if the chosen version is V1?\r\n3) And vice versa?\r\n4) If the server receives V2 handshake packets from the client, shall it conclude that the negotiation is successful?\r\n5) In case of session resumption, does the client resume using V1 or V2? I think the answer to that question depends on the content of the \"supported versions\" list provided by the server. If it includes V2, then the server is ready to receive V2 packets. If the server is part of a server farm with partial deployment of V2, it should not say that V2 is ready. The answer may also depend on local conditions at the client.\r\n6) If the client resumes using V1, it will send 0-RTT packets using V1. The server will receive these packets after the client's initial packets, and thus after receiving the transport parameters and completing the version upgrade. Should the server drop these packets? Or should it continue accept them until the handshake completes?\r\n7) On the client side, there will be a delay between completing the negotiation and finalizing the handshake. The client may want to send 0-RTT packets during that interval. Shall it send those using V1 or V2?\r\n\r\n\r\n",
       "createdAt": "2021-12-04T21:14:50Z",
-      "updatedAt": "2021-12-08T06:50:22Z",
-      "closedAt": null,
+      "updatedAt": "2022-01-07T20:29:43Z",
+      "closedAt": "2022-01-07T20:29:43Z",
       "comments": [
         {
           "author": "martinduke",
@@ -455,9 +455,17 @@
       "labels": [],
       "body": "It is necessary to specify how retry works when a compatible upgrade is used.\r\n\r\nThe easiest way to specify this is to say that Retry can be sent in version 1, but the validation is performed as though a version 2 retry was sent.  That's what I've seen implemented thus far.",
       "createdAt": "2022-01-05T01:40:11Z",
-      "updatedAt": "2022-01-05T01:40:11Z",
+      "updatedAt": "2022-01-07T21:12:12Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Here's the relevant text in your PR (numbers mine) \r\n(1) A server SHOULD produce a Retry packet in the same version as the Initial packet\r\nthat the Retry packet responds to.  (2) Validation of the Retry exchange uses the\r\nlogic of the final negotiated version, treating the Retry as if it were sent in\r\nthat version. (3) This means that the version used for Retry is not authenticated,\r\nonly that it occurred and the connection ID that was used.\r\n\r\n(1) I made it a MUST in the recent merge, to make it a bit easier for clients.\r\n\r\n(2) I'm not really sure what this means in the context of v1/v2 -- the logic is identical in both cases. Maybe this is something for the v1->vn text (pending) in the VN doc? But yeah, anything in the client hello, including the retry TPs, are processed syntactically as v1  but the content is used for v2 purposes. Do I understand the takeaway correctly?\r\n\r\n(3) This is a fair point to make, I guess: the Retry logic only ever measured that the CIDs matched. But, meh? The client changing the version between connection attempts would be strange, but legal and not obviously dangerous. If you think this sentence is valuable, I can add it.\r\n\r\n\r\n\r\n",
+          "createdAt": "2022-01-07T21:12:12Z",
+          "updatedAt": "2022-01-07T21:12:12Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -692,24 +700,26 @@
       "id": "PR_kwDOFX7TQc4wiJlU",
       "title": "Rules for compatible VN",
       "url": "https://github.com/quicwg/quic-v2/pull/19",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "martinduke",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Fixes #14 and fixes #15.\r\n\r\nI could be persuaded that some of the choices made here are not the best.",
       "createdAt": "2022-01-04T22:58:16Z",
-      "updatedAt": "2022-01-05T03:00:39Z",
+      "updatedAt": "2022-01-07T20:29:43Z",
       "baseRepository": "quicwg/quic-v2",
       "baseRefName": "main",
       "baseRefOid": "4e7ae98a2ec5089139693b7135a0ebcbc5177c0c",
       "headRepository": "quicwg/quic-v2",
       "headRefName": "update-narrative",
       "headRefOid": "5cfe3115d2587d83f554b9d1d6c8ae8517c43fa1",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2022-01-07T20:29:43Z",
+      "mergedAt": "2022-01-07T20:29:43Z",
+      "mergedBy": "martinduke",
+      "mergeCommit": {
+        "oid": "201b8b779c9bf2091b6a2ae083deeaad29929c5b"
+      },
       "comments": [
         {
           "author": "martinthomson",
@@ -717,6 +727,13 @@
           "body": "Oops, I posted #24, which is almost exactly the same.  My bad.\r\n\r\nThe 0-RTT thing is one I might contest here.  It is possible to accept 0-RTT if you have a compatible upgrade, but I'm not sure that you ever need it.  The situations in which you can use 0-RTT without knowing what version is in use are few.  All the client has to do is remember the negotiated version from last time and use that version.",
           "createdAt": "2022-01-05T03:00:39Z",
           "updatedAt": "2022-01-05T03:00:39Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I take it we've reached rough consensus that 0RTT has value, though no one will force MT to accept those packets.\r\n\r\nI'm going to merge this, and fix #23 in a separate PR (taking text from #24)",
+          "createdAt": "2022-01-07T20:29:37Z",
+          "updatedAt": "2022-01-07T20:29:37Z"
         }
       ],
       "reviews": [
