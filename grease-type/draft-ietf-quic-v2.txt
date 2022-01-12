@@ -4,8 +4,8 @@
 
 QUIC                                                             M. Duke
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                         11 January 2022
-Expires: 15 July 2022
+Intended status: Standards Track                         12 January 2022
+Expires: 16 July 2022
 
 
                              QUIC Version 2
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 July 2022.
+   This Internet-Draft will expire on 16 July 2022.
 
 Copyright Notice
 
@@ -151,10 +151,7 @@ Table of Contents
 
 3.1.  Version Field
 
-   The version field of long headers is TBD.  Note: Unless this document
-   is published as an RFC, implementations should use the provisional
-   value 0xff020000, which might change with each edition of this
-   document.
+   The version field of long headers is 0x709a50c4.
 
 3.2.  Long Header Packet Types
 
@@ -275,9 +272,9 @@ Table of Contents
    This document requests that IANA add the following entry to the QUIC
    version registry:
 
-   Value: TBD
+   Value: 0x709a50c4
 
-   Status: permanent
+   Status: provisional
 
    Specification: This Document
 
@@ -340,6 +337,8 @@ A.1.  since draft-ietf-quic-v2-00
    *  Expanded requirements for compatible version negotiation
 
    *  Greased the packet type codepoints
+
+   *  Random version number
 
 A.2.  since draft-duke-quic-v2-02
 
