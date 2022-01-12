@@ -1138,7 +1138,29 @@ contains the draft:
             <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="xref">2</a>.  <a href="#name-conventions" class="xref">Conventions</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="xref">3</a>.  <a href="#name-changes-from-quic-version-1" class="xref">Changes from QUIC Version 1</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-changes-from-quic-version-1" class="xref">Changes from QUIC Version 1</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-version-field" class="xref">Version Field</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-long-header-packet-types" class="xref">Long Header Packet Types</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="xref">3.3</a>.  <a href="#name-cryptography-changes" class="xref">Cryptography changes</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3.2.1">
+                    <p id="section-toc.1-1.3.2.3.2.1.1"><a href="#section-3.3.1" class="xref">3.3.1</a>.  <a href="#name-initial-salt" class="xref">Initial Salt</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3.2.2">
+                    <p id="section-toc.1-1.3.2.3.2.2.1"><a href="#section-3.3.2" class="xref">3.3.2</a>.  <a href="#name-hkdf-labels" class="xref">HKDF Labels</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3.2.3">
+                    <p id="section-toc.1-1.3.2.3.2.3.1"><a href="#section-3.3.3" class="xref">3.3.3</a>.  <a href="#name-retry-integrity-tag" class="xref">Retry Integrity Tag</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-version-negotiation-conside" class="xref">Version Negotiation Considerations</a></p>
@@ -1244,21 +1266,49 @@ interpreted as described in RFC 2119 <span>[<a href="#RFC2119" class="xref">RFC2
       </h2>
 <p id="section-3-1">QUIC version 2 endpoints MUST implement the QUIC version 1 specification as
 described in <span>[<a href="#QUIC" class="xref">QUIC</a>]</span>, <span>[<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>, and <span>[<a href="#RFC9002" class="xref">RFC9002</a>]</span>, with the following
-changes:<a href="#section-3-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-3-2.1">The version field of long headers is 0x709a50c4.<a href="#section-3-2.1" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-3-2.2">The salt used to derive Initial keys in <span><a href="https://rfc-editor.org/rfc/rfc9001#section-5.2" class="relref">Section 5.2</a> of [<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span> changes
-to:<a href="#section-3-2.2" class="pilcrow">¶</a>
-</li>
-      </ul>
-<div class="alignLeft art-text artwork" id="section-3-3">
+changes.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div id="version-field">
+<section id="section-3.1">
+        <h3 id="name-version-field">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-version-field" class="section-name selfRef">Version Field</a>
+        </h3>
+<p id="section-3.1-1">The version field of long headers is 0x709a50c4.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="long-header-packet-types">
+<section id="section-3.2">
+        <h3 id="name-long-header-packet-types">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-long-header-packet-types" class="section-name selfRef">Long Header Packet Types</a>
+        </h3>
+<p id="section-3.2-1">Initial packets use a packet type field of 0b01. 0-RTT packets use a packet
+type field of 0b10. Handshake packets use a packet type field of 0b11. Retry
+packets use a packet type field of 0b00.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="cryptography-changes">
+<section id="section-3.3">
+        <h3 id="name-cryptography-changes">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-cryptography-changes" class="section-name selfRef">Cryptography changes</a>
+        </h3>
+<div id="initial-salt">
+<section id="section-3.3.1">
+          <h4 id="name-initial-salt">
+<a href="#section-3.3.1" class="section-number selfRef">3.3.1. </a><a href="#name-initial-salt" class="section-name selfRef">Initial Salt</a>
+          </h4>
+<p id="section-3.3.1-1">The salt used to derive Initial keys in <span><a href="https://rfc-editor.org/rfc/rfc9001#section-5.2" class="relref">Section 5.2</a> of [<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span> changes to:<a href="#section-3.3.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.3.1-2">
 <pre>
 initial_salt = 0xa707c203a59b47184a1d62ca570406ea7ae3e5d3
-</pre><a href="#section-3-3" class="pilcrow">¶</a>
+</pre><a href="#section-3.3.1-2" class="pilcrow">¶</a>
 </div>
-<ul class="normal">
-<li class="normal" id="section-3-4.1">The labels used in <span>[<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span> to derive packet protection keys (Section
+</section>
+</div>
+<div id="hkdf-labels">
+<section id="section-3.3.2">
+          <h4 id="name-hkdf-labels">
+<a href="#section-3.3.2" class="section-number selfRef">3.3.2. </a><a href="#name-hkdf-labels" class="section-name selfRef">HKDF Labels</a>
+          </h4>
+<p id="section-3.3.2-1">The labels used in <span>[<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span> to derive packet protection keys (Section
 <a href="https://rfc-editor.org/rfc/rfc9001#section-5.1" class="relref">5.1</a>), header protection keys
 (Section <a href="https://rfc-editor.org/rfc/rfc9001#section-5.4" class="relref">5.4</a>), Retry Integrity
 Tag keys (Section <a href="https://rfc-editor.org/rfc/rfc9001#section-5.8" class="relref">5.8</a>), and key
@@ -1266,18 +1316,27 @@ updates (Section <a href="https://rfc-editor.org/rfc/rfc9001#section-6.1" class=
 "quic key" to "quicv2 key", from "quic iv" to "quicv2 iv", from "quic hp" to
 "quicv2 hp", and from "quic ku" to "quicv2 ku", to meet the guidance for new
 versions in Section <a href="https://rfc-editor.org/rfc/rfc9001#section-9.6" class="relref">9.6</a> of that
-document.<a href="#section-3-4.1" class="pilcrow">¶</a>
-</li>
-        <li class="normal" id="section-3-4.2">The key and nonce used for the Retry Integrity Tag (<span><a href="https://rfc-editor.org/rfc/rfc9001#section-5.8" class="relref">Section 5.8</a> of [<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>) change to:<a href="#section-3-4.2" class="pilcrow">¶</a>
-</li>
-      </ul>
-<div class="alignLeft art-text artwork" id="section-3-5">
+document.<a href="#section-3.3.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="retry-integrity-tag">
+<section id="section-3.3.3">
+          <h4 id="name-retry-integrity-tag">
+<a href="#section-3.3.3" class="section-number selfRef">3.3.3. </a><a href="#name-retry-integrity-tag" class="section-name selfRef">Retry Integrity Tag</a>
+          </h4>
+<p id="section-3.3.3-1">The key and nonce used for the Retry Integrity Tag (<span><a href="https://rfc-editor.org/rfc/rfc9001#section-5.8" class="relref">Section 5.8</a> of [<a href="#QUIC-TLS" class="xref">QUIC-TLS</a>]</span>)
+change to:<a href="#section-3.3.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.3.3-2">
 <pre>
 secret =
   0x3425c20cf88779df2ff71e8abfa78249891e763bbed2f13c048343d348c060e2
 key = 0xba858dc7b43de5dbf87617ff4ab253db
 nonce = 0x141b99c239b03e785d6a2e9f
-</pre><a href="#section-3-5" class="pilcrow">¶</a>
+</pre><a href="#section-3.3.3-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
 </div>
 </section>
 </div>
@@ -1447,7 +1506,11 @@ publication of a final version of this document.<a href="#appendix-A-1.1.1" clas
 <a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-since-draft-ietf-quic-v2-00" class="section-name selfRef">since draft-ietf-quic-v2-00</a>
         </h3>
 <ul class="normal">
-<li class="normal" id="appendix-A.1-1.1">Random version number<a href="#appendix-A.1-1.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-A.1-1.1">Expanded requirements for compatible version negotiation<a href="#appendix-A.1-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="appendix-A.1-1.2">Greased the packet type codepoints<a href="#appendix-A.1-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="appendix-A.1-1.3">Random version number<a href="#appendix-A.1-1.3" class="pilcrow">¶</a>
 </li>
         </ul>
 </section>

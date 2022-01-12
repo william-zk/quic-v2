@@ -80,6 +80,12 @@ Table of Contents
    1.  Introduction
    2.  Conventions
    3.  Changes from QUIC Version 1
+     3.1.  Version Field
+     3.2.  Long Header Packet Types
+     3.3.  Cryptography changes
+       3.3.1.  Initial Salt
+       3.3.2.  HKDF Labels
+       3.3.3.  Retry Integrity Tag
    4.  Version Negotiation Considerations
      4.1.  Compatible Negotiation Requirements
    5.  Ossification Considerations
@@ -141,25 +147,40 @@ Table of Contents
 
    QUIC version 2 endpoints MUST implement the QUIC version 1
    specification as described in [QUIC], [QUIC-TLS], and [RFC9002], with
-   the following changes:
+   the following changes.
 
-   *  The version field of long headers is 0x709a50c4.
+3.1.  Version Field
 
-   *  The salt used to derive Initial keys in Section 5.2 of [QUIC-TLS]
-      changes to:
+   The version field of long headers is 0x709a50c4.
+
+3.2.  Long Header Packet Types
+
+   Initial packets use a packet type field of 0b01. 0-RTT packets use a
+   packet type field of 0b10.  Handshake packets use a packet type field
+   of 0b11.  Retry packets use a packet type field of 0b00.
+
+3.3.  Cryptography changes
+
+3.3.1.  Initial Salt
+
+   The salt used to derive Initial keys in Section 5.2 of [QUIC-TLS]
+   changes to:
 
    initial_salt = 0xa707c203a59b47184a1d62ca570406ea7ae3e5d3
 
-   *  The labels used in [QUIC-TLS] to derive packet protection keys
-      (Section 5.1), header protection keys (Section 5.4), Retry
-      Integrity Tag keys (Section 5.8), and key updates (Section 6.1)
-      change from "quic key" to "quicv2 key", from "quic iv" to "quicv2
-      iv", from "quic hp" to "quicv2 hp", and from "quic ku" to "quicv2
-      ku", to meet the guidance for new versions in Section 9.6 of that
-      document.
+3.3.2.  HKDF Labels
 
-   *  The key and nonce used for the Retry Integrity Tag (Section 5.8 of
-      [QUIC-TLS]) change to:
+   The labels used in [QUIC-TLS] to derive packet protection keys
+   (Section 5.1), header protection keys (Section 5.4), Retry Integrity
+   Tag keys (Section 5.8), and key updates (Section 6.1) change from
+   "quic key" to "quicv2 key", from "quic iv" to "quicv2 iv", from "quic
+   hp" to "quicv2 hp", and from "quic ku" to "quicv2 ku", to meet the
+   guidance for new versions in Section 9.6 of that document.
+
+3.3.3.  Retry Integrity Tag
+
+   The key and nonce used for the Retry Integrity Tag (Section 5.8 of
+   [QUIC-TLS]) change to:
 
    secret =
      0x3425c20cf88779df2ff71e8abfa78249891e763bbed2f13c048343d348c060e2
@@ -312,6 +333,10 @@ Appendix A.  Changelog
       publication of a final version of this document.
 
 A.1.  since draft-ietf-quic-v2-00
+
+   *  Expanded requirements for compatible version negotiation
+
+   *  Greased the packet type codepoints
 
    *  Random version number
 
