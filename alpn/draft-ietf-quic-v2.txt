@@ -394,6 +394,8 @@ A.1.  since draft-ietf-quic-v2-00
 
    *  Clarified requirement to use QUIC-VN
 
+   *  Added new ALPN for h3
+
 A.2.  since draft-duke-quic-v2-02
 
    *  Converted to adopted draft
