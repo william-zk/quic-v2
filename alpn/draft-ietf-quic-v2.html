@@ -1432,8 +1432,10 @@ interoperability concern.<a href="#section-6-1" class="pilcrow">¶</a></p>
         <h3 id="name-the-http-3-exception">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-the-http-3-exception" class="section-name selfRef">The HTTP/3 Exception</a>
         </h3>
-<p id="section-6.1-1">HTTP/3 can use the ALPN codepoint to discover QUIC versions via the Alt-Svc
-HTTP field <span>[<a href="#RFC7838" class="xref">RFC7838</a>]</span>. If different QUIC versions use the same HTTP/3 ALPN, a
+<p id="section-6.1-1">The Alt-Svc HTTP field <span>[<a href="#RFC7838" class="xref">RFC7838</a>]</span> allows an HTTP server to inform clients of
+which versions of HTTP it supports. However, in order to use this information, clients
+also need to select a transport protocol that can carry HTTP.
+If multiple QUIC versions were to use the same ALPN to refer to HTTP/3, a
 client might discover QUIC support via Alt-Svc on a TCP connection, and then
 attempt to use a QUIC version that the server does not support. Therefore, HTTP/3 is an
 exception to the principle that new QUIC versions do not require new ALPN
