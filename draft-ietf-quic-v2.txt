@@ -4,8 +4,8 @@
 
 QUIC                                                             M. Duke
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                         12 January 2022
-Expires: 16 July 2022
+Intended status: Standards Track                         15 January 2022
+Expires: 19 July 2022
 
 
                              QUIC Version 2
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 16 July 2022.
+   This Internet-Draft will expire on 19 July 2022.
 
 Copyright Notice
 
@@ -95,11 +95,17 @@ Table of Contents
    9.  References
      9.1.  Normative References
      9.2.  Informative References
-   Appendix A.  Changelog
-     A.1.  since draft-ietf-quic-v2-00
-     A.2.  since draft-duke-quic-v2-02
-     A.3.  since draft-duke-quic-v2-01
-     A.4.  since draft-duke-quic-v2-00
+   Appendix A.  Sample Packet Protection
+     A.1.  Keys
+     A.2.  Client Initial
+     A.3.  Server Initial
+     A.4.  Retry
+     A.5.  ChaCha20-Poly1305 Short Header Packet
+   Appendix B.  Changelog
+     B.1.  since draft-ietf-quic-v2-00
+     B.2.  since draft-duke-quic-v2-02
+     B.3.  since draft-duke-quic-v2-01
+     B.4.  since draft-duke-quic-v2-00
    Author's Address
 
 1.  Introduction
@@ -342,14 +348,50 @@ Table of Contents
               RFC 8999, DOI 10.17487/RFC8999, May 2021,
               <https://www.rfc-editor.org/rfc/rfc8999>.
 
-Appendix A.  Changelog
+Appendix A.  Sample Packet Protection
+
+   This section shows examples of packet protection so that
+   implementations can be verified incrementally.  Samples of initial
+   packets from both client and server plus a Retry packet are defined.
+   These packets use an 8-byte client-chosen Destination Connection ID
+   of 0x8394c8f03e515708.
+
+A.1.  Keys
+
+   TBD
+
+A.2.  Client Initial
+
+   TBD
+
+A.3.  Server Initial
+
+   TBD
+
+A.4.  Retry
+
+   This shows a Retry packet that might be sent in response to the
+   Initial packet in Appendix A.2.  The integrity check includes the
+   client-chosen connection ID value of 0x8394c8f03e515708, but that
+   value is not included in the final retry packet:
+
+   cf709a50c40008f067a5502a4262b574  6f6b656e1dc71130cd1ed39d6efcee5c
+   85806501
+
+A.5.  ChaCha20-Poly1305 Short Header Packet
+
+   TBD
+
+Appendix B.  Changelog
 
       *RFC Editor's Note:* Please remove this section prior to
       publication of a final version of this document.
 
-A.1.  since draft-ietf-quic-v2-00
+B.1.  since draft-ietf-quic-v2-00
 
    *  Expanded requirements for compatible version negotiation
+
+   *  Added Retry test vector
 
    *  Greased the packet type codepoints
 
@@ -357,7 +399,7 @@ A.1.  since draft-ietf-quic-v2-00
 
    *  Clarified requirement to use QUIC-VN
 
-A.2.  since draft-duke-quic-v2-02
+B.2.  since draft-duke-quic-v2-02
 
    *  Converted to adopted draft
 
@@ -365,13 +407,13 @@ A.2.  since draft-duke-quic-v2-02
 
    *  Clarified status of QUIC extensions
 
-A.3.  since draft-duke-quic-v2-01
+B.3.  since draft-duke-quic-v2-01
 
    *  Made the final version number TBD.
 
    *  Added ALPN considerations
 
-A.4.  since draft-duke-quic-v2-00
+B.4.  since draft-duke-quic-v2-00
 
    *  Added provisional versions for interop
 
