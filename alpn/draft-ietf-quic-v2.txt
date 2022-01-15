@@ -4,8 +4,8 @@
 
 QUIC                                                             M. Duke
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                         14 January 2022
-Expires: 18 July 2022
+Intended status: Standards Track                         15 January 2022
+Expires: 19 July 2022
 
 
                              QUIC Version 2
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 July 2022.
+   This Internet-Draft will expire on 19 July 2022.
 
 Copyright Notice
 
@@ -287,12 +287,12 @@ Table of Contents
    an exception to the principle that new QUIC versions do not require
    new ALPN codepoints.
 
-   Therefore, HTTP/3 servers using QUIC version 2 MUST accept the "h3v2"
-   ALPN for QUICv2 connections.  Clients SHOULD request this ALPN over
-   QUICv2.  Servers MAY accept the "h3" ALPN over version 2 to improve
-   compatibility with QUICv2 clients supporting unmodified applications,
-   but MUST NOT advertise the "h3" ALPN via Alt-Svc unless they also
-   support QUIC version 1.
+   Therefore, HTTP/3 servers using QUIC version 2 MUST accept the
+   "h3v2-01" ALPN for QUICv2 connections.  Clients SHOULD request this
+   ALPN over QUICv2.  Servers MAY accept the "h3" ALPN over version 2 to
+   improve compatibility with QUICv2 clients supporting unmodified
+   applications, but MUST NOT advertise the "h3" ALPN via Alt-Svc unless
+   they also support QUIC version 1.
 
    A client request for either ALPN does not prevent a compatible
    version negotiation.  As part of the translation of the Client
