@@ -4,8 +4,8 @@
 
 QUIC                                                             M. Duke
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                         14 January 2022
-Expires: 18 July 2022
+Intended status: Standards Track                         15 January 2022
+Expires: 19 July 2022
 
 
                              QUIC Version 2
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 July 2022.
+   This Internet-Draft will expire on 19 July 2022.
 
 Copyright Notice
 
@@ -375,8 +375,8 @@ A.4.  Retry
    client-chosen connection ID value of 0x8394c8f03e515708, but that
    value is not included in the final retry packet:
 
-   cf709a50c40008f067a5502a4262b574  6f6b656e5a2b387ebffde81cf437187d
-   097b26eb
+   cf709a50c40008f067a5502a4262b574  6f6b656e1dc71130cd1ed39d6efcee5c
+   85806501
 
 A.5.  ChaCha20-Poly1305 Short Header Packet
 
