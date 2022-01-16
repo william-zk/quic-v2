@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-01-13T00:30:35.003775+00:00",
+  "timestamp": "2022-01-16T00:29:55.178067+00:00",
   "repo": "quicwg/quic-v2",
   "labels": [
     {
@@ -602,7 +602,7 @@
       "labels": [],
       "body": "At IETF 106, [we decided](https://github.com/quicwg/base-drafts/pull/3323) that HTTP/3 only runs over QUICv1. draft-ietf-quic-http still states `HTTP/3 relies on QUIC version 1 as the underlying transport`. Since that document is the reference in the ALPN registry for the ALPN string \"h3\", that means that `Alt-Svc: h3` is formally defined as \"HTTP/3 over QUICv1\". And that's exactly what all major browsers have implemented: if they see \"h3\" in Alt-Svc, they will send a QUICv1 initial.\r\n\r\nSeparately, the QUICv2 draft currently does not mention \"h3\" or HTTP/3 at all. If we were to publish QUICv2 as-is, that would mean that the only way that QUICv2 would ever be used with HTTP/3 would be for clients to send a QUICv1 initial and then have the server perform [compatible version negotiation](https://datatracker.ietf.org/doc/html/draft-ietf-quic-version-negotiation-05#section-4.3) from v1 to v2. That also means that QUICv2 endpoints will forever need to support QUICv1. That doesn't sound ideal.\r\n\r\nThis has been discussed before [on the list](https://mailarchive.ietf.org/arch/msg/quic/VuAWMvB8XFjpfK7kg6QaHn4KHqA/) and [at IETF 111](https://www.youtube.com/watch?v=R7q8cWIAIDQ&t=6262s) but we never reached consensus on a path forward.\r\n\r\nHere are the options I see:\r\n\r\n1. Leave everything as-is, and accept that QUICv2 requires QUICv1 and compatible version negotiation\r\n2. Mint a new ALPN (e.g. \"h3q2\") that means \"HTTP/3 over QUICv2\" and can be used in Alt-Svc\r\n3. Add a new parameter to Alt-Svc entries that specific the QUIC version (though servers would still need to support QUICv1 for old clients that don't know the parameter)\r\n\r\nGiven that we won't be minting that many QUIC versions, one new h3 ALPN per version seems simplest to me.\r\n\r\nFor what it's worth, I feel strongly that we should get WG consensus on the path forward here before we start the WGLC on QUICv2.",
       "createdAt": "2022-01-12T21:27:27Z",
-      "updatedAt": "2022-01-12T22:33:24Z",
+      "updatedAt": "2022-01-14T22:42:01Z",
       "closedAt": null,
       "comments": [
         {
@@ -639,6 +639,72 @@
           "body": "Yeah sorry, David expressed it better than me. I should clarify that both options 2 and 3 have impact on Alt-Svc.\r\n\r\nTo add to my preference on option 2. Anything that uses ALPN for reporting or logging (such as the Web's resource timing nextHopProtocol) can benefit from information encoded in the ALPN ID itself. No extra work needed to encode transport-level details. ",
           "createdAt": "2022-01-12T22:33:24Z",
           "updatedAt": "2022-01-12T22:33:24Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "To summarize some offline discussion:\r\n\r\nUsing an Alt-Svc parameter would limit impact on the ALPN registry. It would also mean that applications wouldn't need to change their advertised ALPN when their underlying QUIC implementations rolled out a new version. However, it opens up this edge case:\r\n\r\n1. A v1-only client connects via TCP to an HTTP server that supports QUICv2 but not v1\r\n2. The client is unmodified, so doesn't recognize the parameter\r\n3. Seeing \"h3\" in alt-svc, it tries to connect via QUICv1, and the VN packet says it can't. Thus it has wasted an RTT where a v2-specific ALPN would have told it not to try in the first place and stay with TCP.",
+          "createdAt": "2022-01-14T18:00:28Z",
+          "updatedAt": "2022-01-14T18:00:28Z"
+        },
+        {
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "body": "Given this impact HTTP, it would be good to make the HTTP WG aware of the discussion and proposal ",
+          "createdAt": "2022-01-14T22:42:01Z",
+          "updatedAt": "2022-01-14T22:42:01Z"
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "id": "I_kwDOFX7TQc5BsTBH",
+      "title": "QUICv2 should not allow TLS resumption with QUICv1 tickets",
+      "url": "https://github.com/quicwg/quic-v2/issues/31",
+      "state": "OPEN",
+      "author": "DavidSchinazi",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "During the discussion of https://github.com/quicwg/version-negotiation/issues/68, we came to the conclusion that it was simplest and safest to ban TLS resumption across QUIC versions. The version negotiation draft will mention this, but without normative text because TLS is not a QUIC invariant. The QUICv2 draft should add normative text to explicitly ban resuming TLS across versions.",
+      "createdAt": "2022-01-13T18:19:08Z",
+      "updatedAt": "2022-01-15T01:49:25Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Does this consensus apply to compatible VN? If the client initiates with v1 and a v1 resumption ticket, can the server upgrade it to v2 and still respect the 0RTT, etc?\r\n\r\nIIUC, this means that if the client connects with v1 and learns that the server does v2, but there's no upgrade, if the client decides to connect next time with v2 it can't use 0RTT because there will have been a v1 resumption ticket? Whereas an upgraded connection would have a v2 resumption ticket?",
+          "createdAt": "2022-01-14T18:08:52Z",
+          "updatedAt": "2022-01-14T18:08:52Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "NONE",
+          "body": "> if the client connects with v1 and learns that the server does v2\r\n\r\nWhat does this mean? How does the client \"learn\" that the server speaks v2 if the server didn't perform compatible VN from v1 to v2?",
+          "createdAt": "2022-01-14T22:13:51Z",
+          "updatedAt": "2022-01-14T22:13:51Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> > if the client connects with v1 and learns that the server does v2\r\n> \r\n> What does this mean? How does the client \"learn\" that the server speaks v2 if the server didn't perform compatible VN from v1 to v2?\r\n\r\nIf the server does not upgrade, but it learns about available versions via the TP.",
+          "createdAt": "2022-01-14T22:53:41Z",
+          "updatedAt": "2022-01-14T22:53:41Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "NONE",
+          "body": "The server's Other Versions field exists to prevent downgrades in incompatible VN. There's no text suggesting that clients remember that information for use outside of the current connection.",
+          "createdAt": "2022-01-14T23:38:16Z",
+          "updatedAt": "2022-01-14T23:38:16Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "That may not have been your intent, but why wouldn't a client do this?",
+          "createdAt": "2022-01-15T01:49:25Z",
+          "updatedAt": "2022-01-15T01:49:25Z"
         }
       ]
     }
@@ -1462,6 +1528,307 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 32,
+      "id": "PR_kwDOFX7TQc4xDhXh",
+      "title": "Alpn",
+      "url": "https://github.com/quicwg/quic-v2/pull/32",
+      "state": "OPEN",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #30.\r\n\r\nI would personally prefer that we just add a Alt-Svc parameter and suck up the (likely rare) edge cases where this causes a 1RTT penalty, but making an exception for HTTP/3 seems like a reasonable compromise.\r\n\r\nI'm open to the idea that this document now updates draft-ietf-http-quic, or even RFC7301. Just let me know if you think I should add it.",
+      "createdAt": "2022-01-14T19:01:43Z",
+      "updatedAt": "2022-01-15T02:48:38Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "bb3fc8663ccc14b9b9ec840f40add73f5edeae74",
+      "headRepository": "quicwg/quic-v2",
+      "headRefName": "alpn",
+      "headRefOid": "43723dea09ee7ed82d92bcac0896fe0399d31660",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@DavidSchinazi PTAL",
+          "createdAt": "2022-01-15T01:47:31Z",
+          "updatedAt": "2022-01-15T01:47:31Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFX7TQc4y3j8i",
+          "commit": {
+            "abbreviatedOid": "18bd1b0"
+          },
+          "author": "DavidSchinazi",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "FWIW, this document doesn't need to update draft-ietf-http-quic or RFC7301 because it doesn't change them at all. RFC 9001 didn't update 7301.",
+          "createdAt": "2022-01-14T22:15:35Z",
+          "updatedAt": "2022-01-14T22:30:02Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "```suggestion\r\nattempt to use a QUIC version that the server does not support. Therefore, HTTP/3 is an\r\n```",
+              "createdAt": "2022-01-14T22:15:35Z",
+              "updatedAt": "2022-01-14T22:30:02Z"
+            },
+            {
+              "originalPosition": 17,
+              "body": "```suggestion\r\nThe Alt-Svc HTTP field {{?RFC7838}} allows an HTTP server to inform clients of\r\nwhich versions of HTTP it supports. However, in order to use this information, clients\r\nalso need to select a transport protocol that can carry HTTP.\r\nIf multiple QUIC versions were to use the same ALPN to refer to HTTP/3, a\r\n```",
+              "createdAt": "2022-01-14T22:20:40Z",
+              "updatedAt": "2022-01-14T22:30:02Z"
+            },
+            {
+              "originalPosition": 23,
+              "body": "I would prefer this bikeshed to be painted in \"h3q2\" color, because \"h3v2\" sounds like a revision of HTTP/3 to me",
+              "createdAt": "2022-01-14T22:21:47Z",
+              "updatedAt": "2022-01-14T22:30:02Z"
+            },
+            {
+              "originalPosition": 45,
+              "body": "We need to do the same thing that we did during h3 development, which is to add draft versions: `h3v2-03` refers to \"HTTP/3 over draft-ietf-quic-v2-03\"",
+              "createdAt": "2022-01-14T22:25:07Z",
+              "updatedAt": "2022-01-14T22:30:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y3oxg",
+          "commit": {
+            "abbreviatedOid": "bb00f38"
+          },
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-14T22:52:51Z",
+          "updatedAt": "2022-01-14T22:52:51Z",
+          "comments": [
+            {
+              "originalPosition": 45,
+              "body": "The next version of the draft is intended to use the final version and ALPN.",
+              "createdAt": "2022-01-14T22:52:51Z",
+              "updatedAt": "2022-01-14T22:52:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y3s89",
+          "commit": {
+            "abbreviatedOid": "bb00f38"
+          },
+          "author": "DavidSchinazi",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-14T23:36:05Z",
+          "updatedAt": "2022-01-14T23:36:05Z",
+          "comments": [
+            {
+              "originalPosition": 45,
+              "body": "Uh... I'd be more comfortable trying out a draft in production before we burn the codepoints. The QUIC version can always be regenerated randomly, but the ALPN codepoint would be trickier",
+              "createdAt": "2022-01-14T23:36:05Z",
+              "updatedAt": "2022-01-14T23:36:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y30gu",
+          "commit": {
+            "abbreviatedOid": "b751344"
+          },
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-15T01:45:42Z",
+          "updatedAt": "2022-01-15T01:45:42Z",
+          "comments": [
+            {
+              "originalPosition": 45,
+              "body": "OK, h3q2-01",
+              "createdAt": "2022-01-15T01:45:42Z",
+              "updatedAt": "2022-01-15T01:45:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y31cg",
+          "commit": {
+            "abbreviatedOid": "43723de"
+          },
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-15T02:16:50Z",
+          "updatedAt": "2022-01-15T02:16:50Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "I find this whole paragraph a bit confusing because of the different concepts getting munged together. V2 doesn't change how the TLS handshake works, so why are we saying that most of ALPN can work. \r\n\r\nIn my mind it might be clear to state something like it is expected that applications can use QUIC v2 as a direct substitute for QUIC v1 but that there may be implications for how endpoints discover or agree upon the wire version in tandem with authenticated negotiation of an application protocol. For instance, an additional round trip if a client attempts v2 with a v1-only server. We could then go on to to talk about ALPN and rephrase the requirement to say that protocols that would like to avoid performance or interoperability concerns MAY define new ALPN identifiers that explicitly require QUICv2.",
+              "createdAt": "2022-01-15T02:16:50Z",
+              "updatedAt": "2022-01-15T02:16:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y31zs",
+          "commit": {
+            "abbreviatedOid": "43723de"
+          },
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-15T02:28:59Z",
+          "updatedAt": "2022-01-15T02:28:59Z",
+          "comments": [
+            {
+              "originalPosition": 18,
+              "body": "Slight nit. Talk of Alt-Svc this isn't outright wrong but it could be more accurate to say something like\r\n\r\nHTTP Alternative Services (Alt-Svc) {{?RFC8738}} allow servers to nominate alternative means of interaction such as on a different host, port or protocol. Alt-Svc is the often used to advertise server support for HTTP/3 by including the \"h3\" ALPN identifier. When clients decide to connect to an HTTP/3 alternate service, they need to select a QUIC version to use. ",
+              "createdAt": "2022-01-15T02:28:59Z",
+              "updatedAt": "2022-01-15T02:28:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y312m",
+          "commit": {
+            "abbreviatedOid": "43723de"
+          },
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-15T02:30:47Z",
+          "updatedAt": "2022-01-15T02:30:47Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "You might rephrase this like\r\n\r\nIf the \"h3\" ALPN identifier applied to HTTP/3 over many versions of QUIC",
+              "createdAt": "2022-01-15T02:30:47Z",
+              "updatedAt": "2022-01-15T02:30:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y314x",
+          "commit": {
+            "abbreviatedOid": "43723de"
+          },
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-15T02:32:16Z",
+          "updatedAt": "2022-01-15T02:32:16Z",
+          "comments": [
+            {
+              "originalPosition": 21,
+              "body": "is the problem solely from TCP to QUIC? Maybe just simplify the lines to \r\n\r\na client might discover HTTP/3 support and then attempt to use a QUIC version the server does not support",
+              "createdAt": "2022-01-15T02:32:16Z",
+              "updatedAt": "2022-01-15T02:32:16Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y318y",
+          "commit": {
+            "abbreviatedOid": "43723de"
+          },
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-15T02:35:09Z",
+          "updatedAt": "2022-01-15T02:35:09Z",
+          "comments": [
+            {
+              "originalPosition": 28,
+              "body": "what is an unmodified application? HTTP/3 settings come after the TLS handshake so there's not a way to predict what the application might do beyond the ALPN",
+              "createdAt": "2022-01-15T02:35:09Z",
+              "updatedAt": "2022-01-15T02:35:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y32JR",
+          "commit": {
+            "abbreviatedOid": "43723de"
+          },
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-15T02:45:32Z",
+          "updatedAt": "2022-01-15T02:45:32Z",
+          "comments": [
+            {
+              "originalPosition": 29,
+              "body": "wrong line (sorry) but this MUST NOT advertise \"h3\" requirement seems hard to implement in practice. Plus the server advertising \"h3\" could be a totally different entity to the alternative. Consider, in a new sentence, something like\r\n\r\nThe \"h3\" ALPN identifier indicates support for HTTP/3 over QUIC version 1. It SHOULD only be used in Alt-Svc when the alternative is known to support QUIC version 1.",
+              "createdAt": "2022-01-15T02:45:32Z",
+              "updatedAt": "2022-01-15T02:45:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y32M7",
+          "commit": {
+            "abbreviatedOid": "43723de"
+          },
+          "author": "LPardue",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-15T02:48:37Z",
+          "updatedAt": "2022-01-15T02:48:38Z",
+          "comments": [
+            {
+              "originalPosition": 31,
+              "body": "The term request is a bit overloaded. Maybe it would be clearer to say something like\r\n\r\n \"The client choice of ALPN during the handshake doe not prevent a compatible version\"",
+              "createdAt": "2022-01-15T02:48:37Z",
+              "updatedAt": "2022-01-15T02:48:38Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "id": "PR_kwDOFX7TQc4xEMhg",
+      "title": "Retry test vector",
+      "url": "https://github.com/quicwg/quic-v2/pull/33",
+      "state": "MERGED",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Part of the way to fixing #17.",
+      "createdAt": "2022-01-15T00:07:12Z",
+      "updatedAt": "2022-01-15T01:48:26Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "bb3fc8663ccc14b9b9ec840f40add73f5edeae74",
+      "headRepository": "quicwg/quic-v2",
+      "headRefName": "retry-test-vector",
+      "headRefOid": "8cc4a1c25426c4ac27742dc4d61d060bed6b6be3",
+      "closedAt": "2022-01-15T01:48:26Z",
+      "mergedAt": "2022-01-15T01:48:26Z",
+      "mergedBy": "martinduke",
+      "mergeCommit": {
+        "oid": "e239828e8432c50643ef24d298536db52b8df127"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
