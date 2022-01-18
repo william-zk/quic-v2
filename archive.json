@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-01-16T00:29:55.178067+00:00",
+  "timestamp": "2022-01-18T00:29:38.571681+00:00",
   "repo": "quicwg/quic-v2",
   "labels": [
     {
@@ -1541,7 +1541,7 @@
       "labels": [],
       "body": "Fixes #30.\r\n\r\nI would personally prefer that we just add a Alt-Svc parameter and suck up the (likely rare) edge cases where this causes a 1RTT penalty, but making an exception for HTTP/3 seems like a reasonable compromise.\r\n\r\nI'm open to the idea that this document now updates draft-ietf-http-quic, or even RFC7301. Just let me know if you think I should add it.",
       "createdAt": "2022-01-14T19:01:43Z",
-      "updatedAt": "2022-01-15T02:48:38Z",
+      "updatedAt": "2022-01-17T01:11:52Z",
       "baseRepository": "quicwg/quic-v2",
       "baseRefName": "main",
       "baseRefOid": "bb3fc8663ccc14b9b9ec840f40add73f5edeae74",
@@ -1799,6 +1799,19 @@
               "updatedAt": "2022-01-15T02:48:38Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4y4_Vh",
+          "commit": {
+            "abbreviatedOid": "43723de"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "The use of compatible upgrade means that you don't need h3q2.  I don't quite know how to rationalize that, but it's how it is.\r\n\r\nWorse, I'm afraid that this makes it very easy to get into an invalid combination of TLS extension values.\r\n\r\nThe problem is that adding another ALPN value here makes this very difficult to implement correctly.  If you look at how ALPN and transport parameters are implemented, if the two are independently processed (as they often are) then you can end up in very bad situations at a server if the two arrive with incompatible values (\"h3\" in one and \"v2\" in the other).\r\n\r\nI think that means I have to concede that ALPN doesn't identify a protocol stack in the strictest sense.  I think that it was Mike Bishop who said that h3 can use QUICv2 as long as QUICv2 provides the same transport capabilities that h3 depends on in QUICv1. That might be the way to thread this.\r\n\r\n(I don't know if we need some way to identify that part of QUICv1 that h3 depends on and separate that from the both the version-specific stuff in QUICv1 and QUICv2, while also keeping it distinct from QUIC as a protocol with invariants.  \"QUIC\" as a generic thing is tied to invariants that might not be suitable for use with HTTP; and QUICv1 is too specific.)",
+          "createdAt": "2022-01-17T01:11:52Z",
+          "updatedAt": "2022-01-17T01:11:52Z",
+          "comments": []
         }
       ]
     },
