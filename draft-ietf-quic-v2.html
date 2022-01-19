@@ -1548,14 +1548,16 @@ function in order to produce its output are:<a href="#appendix-A.1-1" class="pil
 000c0f746c7331332071756963763220697600<a href="#appendix-A.1-5" class="pilcrow">¶</a></p>
 <p id="appendix-A.1-6">quicv2 hp:
 00100f746c7331332071756963763220687000<a href="#appendix-A.1-6" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-7">The initial secret is common:
-~~~
+<p id="appendix-A.1-7">The initial secret is common:<a href="#appendix-A.1-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.1-8">
+<pre>
 initial_secret = HKDF-Extract(initial_salt, cid)
     = ddfcb7b82a430b7845210ad64b406977
       ed51b269a14bc69aa9ea9b366fa3b06b
-~~~<a href="#appendix-A.1-7" class="pilcrow">¶</a></p>
-<p id="appendix-A.1-8">The secrets for protecting client packets are:<a href="#appendix-A.1-8" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A.1-9">
+</pre><a href="#appendix-A.1-8" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.1-9">The secrets for protecting client packets are:<a href="#appendix-A.1-9" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.1-10">
 <pre>
 client_initial_secret
     = HKDF-Expand-Label(initial_secret, "client in", "", 32)
@@ -1570,10 +1572,10 @@ iv  = HKDF-Expand-Label(client_initial_secret, "quicv2 iv", "", 12)
 
 hp  = HKDF-Expand-Label(client_initial_secret, "quicv2 hp", "", 16)
     = 091efb735702447d07908f6501845794
-</pre><a href="#appendix-A.1-9" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.1-10" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.1-10">The secrets for protecting server packets are:<a href="#appendix-A.1-10" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A.1-11">
+<p id="appendix-A.1-11">The secrets for protecting server packets are:<a href="#appendix-A.1-11" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.1-12">
 <pre>
 server_initial_secret
     = HKDF-Expand-Label(initial_secret, "server in", "", 32)
@@ -1588,7 +1590,7 @@ iv  = HKDF-Expand-Label(server_initial_secret, "quicv2 iv", "", 12)
 
 hp  = HKDF-Expand-Label(server_initial_secret, "quicv2 hp", "", 16)
     = b13861cfadbb9d11ff942dd80c8fc33b
-</pre><a href="#appendix-A.1-11" class="pilcrow">¶</a>
+</pre><a href="#appendix-A.1-12" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
