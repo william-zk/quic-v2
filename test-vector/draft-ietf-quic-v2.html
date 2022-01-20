@@ -1572,17 +1572,17 @@ hp  = HKDF-Expand-Label(client_initial_secret, "quicv2 hp", "", 16)
 <div class="alignLeft art-text artwork" id="appendix-A.1-12">
 <pre>
 server_initial_secret
-    = HKDF-Expand-Label(initial_secret, "server in","", 32)
+    = HKDF-Expand-Label(initial_secret, "server in", "", 32)
     = 3c9bf6a9c1c8c71819876967bd8b979e
       fd98ec665edf27f22c06e9845ba0ae2f
 
-key = HKDF-Expand-Label(server_initial_secret, "quicv2 key","", 16)
+key = HKDF-Expand-Label(server_initial_secret, "quicv2 key", "", 16)
     = 15d5b4d9a2b8916aa39b1bfe574d2aad
 
-iv  = HKDF-Expand-Label(server_initial_secret, "quicv2 iv","", 12)
+iv  = HKDF-Expand-Label(server_initial_secret, "quicv2 iv", "", 12)
     = a85e7ac31cd275cbb095c626
 
-hp  = HKDF-Expand-Label(server_initial_secret, "quicv2 hp","", 16)
+hp  = HKDF-Expand-Label(server_initial_secret, "quicv2 hp", "", 16)
     = b13861cfadbb9d11ff942dd80c8fc33b
 </pre><a href="#appendix-A.1-12" class="pilcrow">¶</a>
 </div>
@@ -1795,7 +1795,7 @@ mask   = 97580e32bf
 header = 5558b1c6
 </pre><a href="#appendix-A.5-7" class="pilcrow">¶</a>
 </div>
-<p id="appendix-A.5-8">The protected packet is the smallest possible packet size of 5 bytes.<a href="#appendix-A.5-8" class="pilcrow">¶</a></p>
+<p id="appendix-A.5-8">The protected packet is the smallest possible packet size of 21 bytes.<a href="#appendix-A.5-8" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="appendix-A.5-9">
 <pre>
 packet = 5558b1c60ae7b6b932bc27d786f4bc2bb20f2162ba
@@ -1824,7 +1824,7 @@ publication of a final version of this document.<a href="#appendix-B-1.1.1" clas
 <ul class="normal">
 <li class="normal" id="appendix-B.1-1.1">Expanded requirements for compatible version negotiation<a href="#appendix-B.1-1.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="appendix-B.1-1.2">Added Initial Key and Retry test vector<a href="#appendix-B.1-1.2" class="pilcrow">¶</a>
+          <li class="normal" id="appendix-B.1-1.2">Added test vectors<a href="#appendix-B.1-1.2" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="appendix-B.1-1.3">Greased the packet type codepoints<a href="#appendix-B.1-1.3" class="pilcrow">¶</a>
 </li>
