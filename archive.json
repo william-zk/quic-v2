@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-01-18T00:29:38.571681+00:00",
+  "timestamp": "2022-01-20T00:31:23.976987+00:00",
   "repo": "quicwg/quic-v2",
   "labels": [
     {
@@ -595,15 +595,15 @@
       "id": "I_kwDOFX7TQc5BnPOq",
       "title": "HTTP/3 over QUICv2",
       "url": "https://github.com/quicwg/quic-v2/issues/30",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "DavidSchinazi",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "At IETF 106, [we decided](https://github.com/quicwg/base-drafts/pull/3323) that HTTP/3 only runs over QUICv1. draft-ietf-quic-http still states `HTTP/3 relies on QUIC version 1 as the underlying transport`. Since that document is the reference in the ALPN registry for the ALPN string \"h3\", that means that `Alt-Svc: h3` is formally defined as \"HTTP/3 over QUICv1\". And that's exactly what all major browsers have implemented: if they see \"h3\" in Alt-Svc, they will send a QUICv1 initial.\r\n\r\nSeparately, the QUICv2 draft currently does not mention \"h3\" or HTTP/3 at all. If we were to publish QUICv2 as-is, that would mean that the only way that QUICv2 would ever be used with HTTP/3 would be for clients to send a QUICv1 initial and then have the server perform [compatible version negotiation](https://datatracker.ietf.org/doc/html/draft-ietf-quic-version-negotiation-05#section-4.3) from v1 to v2. That also means that QUICv2 endpoints will forever need to support QUICv1. That doesn't sound ideal.\r\n\r\nThis has been discussed before [on the list](https://mailarchive.ietf.org/arch/msg/quic/VuAWMvB8XFjpfK7kg6QaHn4KHqA/) and [at IETF 111](https://www.youtube.com/watch?v=R7q8cWIAIDQ&t=6262s) but we never reached consensus on a path forward.\r\n\r\nHere are the options I see:\r\n\r\n1. Leave everything as-is, and accept that QUICv2 requires QUICv1 and compatible version negotiation\r\n2. Mint a new ALPN (e.g. \"h3q2\") that means \"HTTP/3 over QUICv2\" and can be used in Alt-Svc\r\n3. Add a new parameter to Alt-Svc entries that specific the QUIC version (though servers would still need to support QUICv1 for old clients that don't know the parameter)\r\n\r\nGiven that we won't be minting that many QUIC versions, one new h3 ALPN per version seems simplest to me.\r\n\r\nFor what it's worth, I feel strongly that we should get WG consensus on the path forward here before we start the WGLC on QUICv2.",
       "createdAt": "2022-01-12T21:27:27Z",
-      "updatedAt": "2022-01-14T22:42:01Z",
-      "closedAt": null,
+      "updatedAt": "2022-01-20T00:01:45Z",
+      "closedAt": "2022-01-20T00:01:44Z",
       "comments": [
         {
           "author": "LPardue",
@@ -653,6 +653,13 @@
           "body": "Given this impact HTTP, it would be good to make the HTTP WG aware of the discussion and proposal ",
           "createdAt": "2022-01-14T22:42:01Z",
           "updatedAt": "2022-01-14T22:42:01Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Result of offline discussion with @martinthomson and @DavidSchinazi, who were the most vocal on the issue:\r\n\r\n1) We will stick with \"h3\" ALPN. Some reasons:\r\n(a) Compatible VN should totally negate any 1-RTT penalties, in practice, for v2.\r\n(b) Longer term, adding/deprecating versions is much harder if you have to update all the applications.\r\n(c) Some implementations will have great difficulty supporting different ALPNs for different versions.\r\n\r\n2) I will try to get a draft started to add a quic-version parameter to Alt-Svc. Longer term, this will avoid most of the problems for h3 over future versions. \r\n\r\n3) I will add some text encouraging v2 servers to also support v1 and compatible VN.\r\n\r\n4) We are punting the issue of incompatible versions for now. We may need to do a new ALPN, or perhaps the Alt-Svc parameter will be sufficient.",
+          "createdAt": "2022-01-20T00:01:44Z",
+          "updatedAt": "2022-01-20T00:01:44Z"
         }
       ]
     },
@@ -668,7 +675,7 @@
       "labels": [],
       "body": "During the discussion of https://github.com/quicwg/version-negotiation/issues/68, we came to the conclusion that it was simplest and safest to ban TLS resumption across QUIC versions. The version negotiation draft will mention this, but without normative text because TLS is not a QUIC invariant. The QUICv2 draft should add normative text to explicitly ban resuming TLS across versions.",
       "createdAt": "2022-01-13T18:19:08Z",
-      "updatedAt": "2022-01-15T01:49:25Z",
+      "updatedAt": "2022-01-20T00:05:47Z",
       "closedAt": null,
       "comments": [
         {
@@ -705,8 +712,38 @@
           "body": "That may not have been your intent, but why wouldn't a client do this?",
           "createdAt": "2022-01-15T01:49:25Z",
           "updatedAt": "2022-01-15T01:49:25Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This issue is hopelessly intertwined with other issues, like how we handle ALPN. I am not equipped to evaluate the claim that cross-version use of tags will cause a security problem, although as I understand it this sentiment is a concern rather than an established threat.\r\n\r\nHowever: the use case I am concerned about involves a client learning about an incompatible version via the supported_versions TP, and choosing to connect to that version. If the resumption tags aren't reusable, then it has to lose an RTT by not doing 0RTT. Relying on incompatible VN would be **two** RTTs before data arrives.\r\n\r\nGranted, v1 and v2 are not incompatible. But if it's not actually unsafe, I'd rather set a precedent that works for future, incompatible versions.",
+          "createdAt": "2022-01-18T21:36:35Z",
+          "updatedAt": "2022-01-18T21:36:35Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Outcome of offline discussion with @martinthomson and @DavidSchinazi:\r\n\r\n1) Clients MUST NOT use a resumption ticket from a QUIC connection and apply it to another version.\r\n\r\n2) Servers SHOULD validate that resumption tickets are not being used across QUIC versions and refuse to honor the ticket (or terminate the connection?) if they are.\r\n\r\n3) Make it clear that the resumption ticket from a connection that did compatible VN maps to the negotiated version, not the original one.",
+          "createdAt": "2022-01-20T00:05:47Z",
+          "updatedAt": "2022-01-20T00:05:47Z"
         }
       ]
+    },
+    {
+      "number": 35,
+      "id": "I_kwDOFX7TQc5CFTUM",
+      "title": "Encourage Compatible VN",
+      "url": "https://github.com/quicwg/quic-v2/issues/35",
+      "state": "OPEN",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In practice, v2 servers should also support compatible VN, as long as v1 clients are ubiquitous. To do otherwise would result in a performance penalty.",
+      "createdAt": "2022-01-20T00:08:54Z",
+      "updatedAt": "2022-01-20T00:08:54Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -1295,7 +1332,7 @@
       "labels": [],
       "body": "Fixes #23 ",
       "createdAt": "2022-01-11T16:21:09Z",
-      "updatedAt": "2022-01-12T22:58:19Z",
+      "updatedAt": "2022-01-19T01:00:31Z",
       "baseRepository": "quicwg/quic-v2",
       "baseRefName": "main",
       "baseRefOid": "50fe07f8dbad88c25a272d5012487e6be1f4cc23",
@@ -1534,21 +1571,21 @@
       "id": "PR_kwDOFX7TQc4xDhXh",
       "title": "Alpn",
       "url": "https://github.com/quicwg/quic-v2/pull/32",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinduke",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Fixes #30.\r\n\r\nI would personally prefer that we just add a Alt-Svc parameter and suck up the (likely rare) edge cases where this causes a 1RTT penalty, but making an exception for HTTP/3 seems like a reasonable compromise.\r\n\r\nI'm open to the idea that this document now updates draft-ietf-http-quic, or even RFC7301. Just let me know if you think I should add it.",
       "createdAt": "2022-01-14T19:01:43Z",
-      "updatedAt": "2022-01-17T01:11:52Z",
+      "updatedAt": "2022-01-20T00:02:18Z",
       "baseRepository": "quicwg/quic-v2",
       "baseRefName": "main",
       "baseRefOid": "bb3fc8663ccc14b9b9ec840f40add73f5edeae74",
       "headRepository": "quicwg/quic-v2",
       "headRefName": "alpn",
       "headRefOid": "43723dea09ee7ed82d92bcac0896fe0399d31660",
-      "closedAt": null,
+      "closedAt": "2022-01-20T00:02:17Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -1559,6 +1596,13 @@
           "body": "@DavidSchinazi PTAL",
           "createdAt": "2022-01-15T01:47:31Z",
           "updatedAt": "2022-01-15T01:47:31Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closed the underlying issue with no action (see further comments in #30)",
+          "createdAt": "2022-01-20T00:02:17Z",
+          "updatedAt": "2022-01-20T00:02:17Z"
         }
       ],
       "reviews": [
@@ -1827,7 +1871,7 @@
       "labels": [],
       "body": "Part of the way to fixing #17.",
       "createdAt": "2022-01-15T00:07:12Z",
-      "updatedAt": "2022-01-15T01:48:26Z",
+      "updatedAt": "2022-01-19T01:00:29Z",
       "baseRepository": "quicwg/quic-v2",
       "baseRefName": "main",
       "baseRefOid": "bb3fc8663ccc14b9b9ec840f40add73f5edeae74",
@@ -1839,6 +1883,34 @@
       "mergedBy": "martinduke",
       "mergeCommit": {
         "oid": "e239828e8432c50643ef24d298536db52b8df127"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 34,
+      "id": "PR_kwDOFX7TQc4xO-EU",
+      "title": "Test vector",
+      "url": "https://github.com/quicwg/quic-v2/pull/34",
+      "state": "MERGED",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Partial fix for #17.\r\n\r\nAlso copied text for sections to come.",
+      "createdAt": "2022-01-19T00:55:27Z",
+      "updatedAt": "2022-01-19T01:00:28Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "e239828e8432c50643ef24d298536db52b8df127",
+      "headRepository": "quicwg/quic-v2",
+      "headRefName": "test-vector",
+      "headRefOid": "0e8bf2eb79f67122ab0cf0eb9bf7e97d33b66818",
+      "closedAt": "2022-01-19T00:59:23Z",
+      "mergedAt": "2022-01-19T00:59:23Z",
+      "mergedBy": "martinduke",
+      "mergeCommit": {
+        "oid": "43989c7e223e052bc8416a9fec873613d5c9bf13"
       },
       "comments": [],
       "reviews": []
