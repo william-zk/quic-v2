@@ -195,19 +195,28 @@ Table of Contents
 
 4.  Version Negotiation Considerations
 
-   QUIC version 2 endpoints SHOULD also support QUIC version 1, as
-   version 2 is both less common than, and not intended to deprecate,
-   version 1.  Any QUIC endpoint that supports multiple versions MUST
-   meet the minimum requirements described in [QUIC-VN] to prevent
-   version downgrade attacks.
+   QUIC version 2 is not intended to deprecate version 1.  Endpoints
+   that support version 2 might continue support for version 1 to
+   maximize compatibility with clients.  In particular, HTTP clients
+   often use Alt-Svc [RFC7838] to discover QUIC support.  As this
+   mechanism does not currently distinguish between QUIC versions, HTTP
+   servers that support multiple versions reduce the probability of
+   incompatibility and the cost associated with QUIC version negotiation
+   or TCP fallback.
+
+   Any QUIC endpoint that supports multiple versions MUST meet the
+   minimum requirements described in [QUIC-VN] to prevent version
+   downgrade attacks.
 
    Note that version 2 meets that document's definition of a compatible
    version with version 1.  Therefore, servers can use compatible
    negotiation to switch a connection between the two versions.
 
-   A server that can parse version 1, but cannot fully support it,
-   SHOULD use compatible negotiation instead of sending a Version
-   Negotiation packet to initiate incompatible version negotiation.
+   A server might fully support version 2 but merely parse Initial
+   packets from version 1, or vice versa.  Such servers SHOULD use
+   compatible negotiation instead of sending a Version Negotiation
+   packet to initiate incompatible version negotiation to avoid the
+   delay penalty of the latter.
 
 4.1.  Compatible Negotiation Requirements
 
@@ -348,6 +357,10 @@ Table of Contents
               "Transport Layer Security (TLS) Application-Layer Protocol
               Negotiation Extension", RFC 7301, DOI 10.17487/RFC7301,
               July 2014, <https://www.rfc-editor.org/rfc/rfc7301>.
+
+   [RFC7838]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
+              Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
+              April 2016, <https://www.rfc-editor.org/rfc/rfc7838>.
 
    [RFC8999]  Thomson, M., "Version-Independent Properties of QUIC",
               RFC 8999, DOI 10.17487/RFC8999, May 2021,
