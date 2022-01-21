@@ -1378,11 +1378,8 @@ therefore some clients will only support that version.<a href="#section-4-1" cla
 requirements described in <span>[<a href="#QUIC-VN" class="xref">QUIC-VN</a>]</span> to prevent version downgrade attacks.<a href="#section-4-2" class="pilcrow">¶</a></p>
 <p id="section-4-3">Note that version 2 meets that document's definition of a compatible version
 with version 1. Therefore, servers can use compatible negotiation to switch a
-connection between the two versions.<a href="#section-4-3" class="pilcrow">¶</a></p>
-<p id="section-4-4">A server might fully support version 2 but merely parse Initial packets from
-version 1, or vice versa. Such servers SHOULD use compatible negotiation instead
-of sending a Version Negotiation packet to initiate incompatible version
-negotiation to avoid the delay penalty of the latter.<a href="#section-4-4" class="pilcrow">¶</a></p>
+connection between the two versions. Endpoints that support both versions
+SHOULD support compatible version negotiation to avoid a round trip.<a href="#section-4-3" class="pilcrow">¶</a></p>
 <div id="compatible-negotiation-requirements">
 <section id="section-4.1">
         <h3 id="name-compatible-negotiation-requ">
