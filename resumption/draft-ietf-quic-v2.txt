@@ -4,8 +4,8 @@
 
 QUIC                                                             M. Duke
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                         20 January 2022
-Expires: 24 July 2022
+Intended status: Standards Track                         21 January 2022
+Expires: 25 July 2022
 
 
                              QUIC Version 2
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 July 2022.
+   This Internet-Draft will expire on 25 July 2022.
 
 Copyright Notice
 
@@ -259,8 +259,8 @@ Table of Contents
    from a QUICv1 connection to initiate a QUICv2 connection, or vice
    versa.
 
-   Servers MAY validate the originating version of any session ticket
-   and reject any ticket issued from a different version.
+   Servers MUST validate the originating version of any session ticket
+   and not resume from any ticket issued from a different version.
 
    Note that during compatible version negotiation, any resulting
    session ticket maps to the negotiated version rather than original
