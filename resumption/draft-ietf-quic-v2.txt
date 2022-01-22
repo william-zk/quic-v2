@@ -4,8 +4,8 @@
 
 QUIC                                                             M. Duke
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                         21 January 2022
-Expires: 25 July 2022
+Intended status: Standards Track                         22 January 2022
+Expires: 26 July 2022
 
 
                              QUIC Version 2
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 July 2022.
+   This Internet-Draft will expire on 26 July 2022.
 
 Copyright Notice
 
@@ -196,14 +196,27 @@ Table of Contents
 
 4.  Version Negotiation Considerations
 
-   QUIC version 2 endpoints SHOULD also support QUIC version 1.  Any
-   QUIC endpoint that supports multiple versions MUST meet the minimum
-   requirements described in [QUIC-VN] to prevent version downgrade
-   attacks.
+   QUIC version 2 is not intended to deprecate version 1.  Endpoints
+   that support version 2 might continue support for version 1 to
+   maximize compatibility with clients.  In particular, HTTP clients
+   often use Alt-Svc [RFC7838] to discover QUIC support.  As this
+   mechanism does not currently distinguish between QUIC versions, HTTP
+   servers that support multiple versions reduce the probability of
+   incompatibility and the cost associated with QUIC version negotiation
+   or TCP fallback.  For example, an origin advertising support for "h3"
+   in Alt-Svc SHOULD support QUIC version 1 as it was the original QUIC
+   version used by HTTP/3 and therefore some clients will only support
+   that version.
+
+   Any QUIC endpoint that supports multiple versions MUST meet the
+   minimum requirements described in [QUIC-VN] to prevent version
+   downgrade attacks.
 
    Note that version 2 meets that document's definition of a compatible
-   version with version 1.  Therefore, v2-capable servers MUST use
-   compatible version negotiation unless they do not support version 1.
+   version with version 1.  Therefore, servers can use compatible
+   negotiation to switch a connection between the two versions.
+   Endpoints that support both versions SHOULD support compatible
+   version negotiation to avoid a round trip.
 
 4.1.  Compatible Negotiation Requirements
 
@@ -259,7 +272,7 @@ Table of Contents
    from a QUICv1 connection to initiate a QUICv2 connection, or vice
    versa.
 
-   Servers MUST validate the originating version of any session ticket
+   Servers SHOULD validate the originating version of any session ticket
    and not resume from any ticket issued from a different version.  This
    results in falling back to a full TLS handshake, without 0-RTT.
 
@@ -358,6 +371,10 @@ Table of Contents
               "Transport Layer Security (TLS) Application-Layer Protocol
               Negotiation Extension", RFC 7301, DOI 10.17487/RFC7301,
               July 2014, <https://www.rfc-editor.org/rfc/rfc7301>.
+
+   [RFC7838]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
+              Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
+              April 2016, <https://www.rfc-editor.org/rfc/rfc7838>.
 
    [RFC8999]  Thomson, M., "Version-Independent Properties of QUIC",
               RFC 8999, DOI 10.17487/RFC8999, May 2021,
@@ -615,6 +632,8 @@ B.1.  since draft-ietf-quic-v2-00
    *  Random version number
 
    *  Clarified requirement to use QUIC-VN
+
+   *  Banned use of resumption tokens across versions
 
 B.2.  since draft-duke-quic-v2-02
 
