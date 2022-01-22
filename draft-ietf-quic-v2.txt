@@ -88,13 +88,14 @@ Table of Contents
        3.3.3.  Retry Integrity Tag
    4.  Version Negotiation Considerations
      4.1.  Compatible Negotiation Requirements
-   5.  Ossification Considerations
-   6.  Applicability
-   7.  Security Considerations
-   8.  IANA Considerations
-   9.  References
-     9.1.  Normative References
-     9.2.  Informative References
+   5.  TLS Resumption
+   6.  Ossification Considerations
+   7.  Applicability
+   8.  Security Considerations
+   9.  IANA Considerations
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
    Appendix A.  Sample Packet Protection
      A.1.  Keys
      A.2.  Client Initial
@@ -264,7 +265,21 @@ Table of Contents
    Servers can apply original version 0-RTT packets to a connection
    without additional considerations.
 
-5.  Ossification Considerations
+5.  TLS Resumption
+
+   TLS session tickets are specific to the QUIC version of the
+   connection that provided them.  Clients MUST NOT use a session ticket
+   from a QUICv1 connection to initiate a QUICv2 connection, or vice
+   versa.
+
+   Servers SHOULD validate the originating version of any session ticket
+   and not resume from any ticket issued from a different version.  This
+   results in falling back to a full TLS handshake, without 0-RTT.
+
+   After compatible version negotiation, any resulting session ticket
+   maps to the negotiated version rather than original one.
+
+6.  Ossification Considerations
 
    QUIC version 2 provides protection against some forms of
    ossification.  Devices that assume that all long headers will contain
@@ -281,7 +296,7 @@ Table of Contents
    server supports it, or are willing to suffer a round-trip penalty if
    they are incorrect.
 
-6.  Applicability
+7.  Applicability
 
    This version of QUIC provides no change from QUIC version 1 relating
    to the capabilities available to applications.  Therefore, all
@@ -292,7 +307,7 @@ Table of Contents
    All QUIC extensions defined to work with version 1 also work with
    version 2.
 
-7.  Security Considerations
+8.  Security Considerations
 
    QUIC version 2 introduces no changes to the security or privacy
    properties of QUIC version 1.
@@ -301,7 +316,7 @@ Table of Contents
    attacks, but downgrades have no security implications, as the version
    properties are identical.
 
-8.  IANA Considerations
+9.  IANA Considerations
 
    This document requests that IANA add the following entry to the QUIC
    version registry:
@@ -316,9 +331,9 @@ Table of Contents
 
    Contact: QUIC WG
 
-9.  References
+10.  References
 
-9.1.  Normative References
+10.1.  Normative References
 
    [QUIC]     Iyengar, J., Ed. and M. Thomson, Ed., "QUIC: A UDP-Based
               Multiplexed and Secure Transport", RFC 9000,
@@ -339,7 +354,7 @@ Table of Contents
               and Congestion Control", RFC 9002, DOI 10.17487/RFC9002,
               May 2021, <https://www.rfc-editor.org/rfc/rfc9002>.
 
-9.2.  Informative References
+10.2.  Informative References
 
    [I-D.duke-quic-version-aliasing]
               Duke, M., "QUIC Version Aliasing", Work in Progress,
@@ -617,6 +632,8 @@ B.1.  since draft-ietf-quic-v2-00
    *  Random version number
 
    *  Clarified requirement to use QUIC-VN
+
+   *  Banned use of resumption tokens across versions
 
 B.2.  since draft-duke-quic-v2-02
 
