@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-01-20T00:31:23.976987+00:00",
+  "timestamp": "2022-01-23T00:26:35.359200+00:00",
   "repo": "quicwg/quic-v2",
   "labels": [
     {
@@ -412,15 +412,15 @@
       "id": "I_kwDOFX7TQc5ABJPl",
       "title": "Test vectors",
       "url": "https://github.com/quicwg/quic-v2/issues/17",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
       "body": "RFC 9001 had 'em and they were very helpful.\r\n\r\nYou might find [this script](https://gist.github.com/martinthomson/1f000d3e389b0bf1308e1043e141fbb9) to be useful.",
       "createdAt": "2021-12-08T05:59:38Z",
-      "updatedAt": "2021-12-08T06:01:37Z",
-      "closedAt": null,
+      "updatedAt": "2022-01-20T23:03:53Z",
+      "closedAt": "2022-01-20T23:03:52Z",
       "comments": [
         {
           "author": "martinthomson",
@@ -428,6 +428,13 @@
           "body": "Note that the TLS messages in that script hasn't been changed to include the version negotiation transport parameters.  If you want to publish it, then you'll need to work out how to do that, sorry.",
           "createdAt": "2021-12-08T06:01:36Z",
           "updatedAt": "2021-12-08T06:01:36Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Finally done",
+          "createdAt": "2022-01-20T23:03:52Z",
+          "updatedAt": "2022-01-20T23:03:52Z"
         }
       ]
     },
@@ -668,15 +675,15 @@
       "id": "I_kwDOFX7TQc5BsTBH",
       "title": "QUICv2 should not allow TLS resumption with QUICv1 tickets",
       "url": "https://github.com/quicwg/quic-v2/issues/31",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "DavidSchinazi",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "During the discussion of https://github.com/quicwg/version-negotiation/issues/68, we came to the conclusion that it was simplest and safest to ban TLS resumption across QUIC versions. The version negotiation draft will mention this, but without normative text because TLS is not a QUIC invariant. The QUICv2 draft should add normative text to explicitly ban resuming TLS across versions.",
       "createdAt": "2022-01-13T18:19:08Z",
-      "updatedAt": "2022-01-20T00:05:47Z",
-      "closedAt": null,
+      "updatedAt": "2022-01-22T00:09:22Z",
+      "closedAt": "2022-01-22T00:09:22Z",
       "comments": [
         {
           "author": "martinduke",
@@ -687,7 +694,7 @@
         },
         {
           "author": "DavidSchinazi",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> if the client connects with v1 and learns that the server does v2\r\n\r\nWhat does this mean? How does the client \"learn\" that the server speaks v2 if the server didn't perform compatible VN from v1 to v2?",
           "createdAt": "2022-01-14T22:13:51Z",
           "updatedAt": "2022-01-14T22:13:51Z"
@@ -701,7 +708,7 @@
         },
         {
           "author": "DavidSchinazi",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "The server's Other Versions field exists to prevent downgrades in incompatible VN. There's no text suggesting that clients remember that information for use outside of the current connection.",
           "createdAt": "2022-01-14T23:38:16Z",
           "updatedAt": "2022-01-14T23:38:16Z"
@@ -734,15 +741,15 @@
       "id": "I_kwDOFX7TQc5CFTUM",
       "title": "Encourage Compatible VN",
       "url": "https://github.com/quicwg/quic-v2/issues/35",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinduke",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "In practice, v2 servers should also support compatible VN, as long as v1 clients are ubiquitous. To do otherwise would result in a performance penalty.",
       "createdAt": "2022-01-20T00:08:54Z",
-      "updatedAt": "2022-01-20T00:08:54Z",
-      "closedAt": null,
+      "updatedAt": "2022-01-22T00:01:22Z",
+      "closedAt": "2022-01-22T00:01:22Z",
       "comments": []
     }
   ],
@@ -1914,6 +1921,353 @@
       },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 36,
+      "id": "PR_kwDOFX7TQc4xWhyh",
+      "title": "Test vector",
+      "url": "https://github.com/quicwg/quic-v2/pull/36",
+      "state": "MERGED",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes for #17.\r\n\r\nThe code that generated these was tested against the RFC 9001 version 1 test vectors.",
+      "createdAt": "2022-01-20T22:47:52Z",
+      "updatedAt": "2022-01-20T23:03:41Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "3298dacd7c9b8f834b96f77e7929872231c5fbcb",
+      "headRepository": "quicwg/quic-v2",
+      "headRefName": "test-vector",
+      "headRefOid": "ffc535f2cc676e26534c86ed0eb55d166562832e",
+      "closedAt": "2022-01-20T23:03:41Z",
+      "mergedAt": "2022-01-20T23:03:41Z",
+      "mergedBy": "martinduke",
+      "mergeCommit": {
+        "oid": "c07e91ecdb0c294c62e9442b09642627b50c7366"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 37,
+      "id": "PR_kwDOFX7TQc4xWowi",
+      "title": "Resumption",
+      "url": "https://github.com/quicwg/quic-v2/pull/37",
+      "state": "MERGED",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #31",
+      "createdAt": "2022-01-20T23:44:51Z",
+      "updatedAt": "2022-01-22T00:09:23Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "8ab85319f34c8347191cc49586f05edddff10190",
+      "headRepository": "quicwg/quic-v2",
+      "headRefName": "resumption",
+      "headRefOid": "b373017e9f6186b43dd50a371ea2d6fa6bdfc287",
+      "closedAt": "2022-01-22T00:09:23Z",
+      "mergedAt": "2022-01-22T00:09:22Z",
+      "mergedBy": "martinduke",
+      "mergeCommit": {
+        "oid": "ef9b0575cdf6a4733bbff76d6db38411c83e4eea"
+      },
+      "comments": [
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Incorporated all suggestions.\r\n\r\nMy only concern about server MUST is that it involves mucking with TLS implementations again to encode version in the ticket. Would this be a real obstacle]?",
+          "createdAt": "2022-01-21T18:02:17Z",
+          "updatedAt": "2022-01-21T18:02:17Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@martinduke for any implementation that uses BoringSSL (and I suspect the OpenSSL API is the same way), adding the version to the ticket will not require modifying the TLS implementation at all because the TLS implementation already accepts an opaque blob of data from QUIC (and that's currently used for transport parameters and h3 settings, adding the QUIC version would be transparent to TLS).",
+          "createdAt": "2022-01-21T18:10:48Z",
+          "updatedAt": "2022-01-21T18:10:48Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "I am a bit concerned that we are departing from the common pattern used in QUIC specification: \"Clients MUST NOT do this particular vile thing; server MAY terminate the connection if they catch the client doing it.\" The purpose of the MUST NOT is to prevent the client from creating problems at the server. The purpose of the MAY is to encourage servers to do some enforcement, so bad client implementations have a good chance of being detected and do not become some entrenched practice. Telling the servers that they MUST enforce forces servers to dedicate resource to explicit detection, which may not be the right tradeoff for classes of servers, such as for example embedded servers with resource constraints.",
+          "createdAt": "2022-01-21T18:12:17Z",
+          "updatedAt": "2022-01-21T18:12:17Z"
+        },
+        {
+          "author": "DavidSchinazi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@huitema that is true, however TLS has a common pattern which is to require servers to validate their tickets thoroughly. I guess we have to pick which common pattern we care about most. I still think having the MUST on both clients and servers will lead to better interoperability",
+          "createdAt": "2022-01-21T18:15:53Z",
+          "updatedAt": "2022-01-21T18:15:53Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "@DavidSchinazi maybe. The way I deal with that in the picoquic demo server is simple: the default transport parameters are set when the process start, and by default the STEK key is also set at process start. I suppose that embedded servers could just follow that tradeoff, i.e., forget tickets issued before the last reboot in exchange for code simplicity. But the simple server only verifies that the version is \"one of the supported versions\", does not check the ticket for that. So this is extra code. Not a ton of extra code, so I am not going to fight that too long. But still extra code.",
+          "createdAt": "2022-01-21T18:26:29Z",
+          "updatedAt": "2022-01-21T18:26:29Z"
+        },
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I changed the MUST to a SHOULD. \"Servers gonna do\", so what we write here doesn't matter much, but I see no reason to create RFC violations where they're not really needed, and on the off chance that some servers have a serious obstacle to doing this.",
+          "createdAt": "2022-01-22T00:09:12Z",
+          "updatedAt": "2022-01-22T00:09:12Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFX7TQc4zMmcy",
+          "commit": {
+            "abbreviatedOid": "b860cbe"
+          },
+          "author": "DavidSchinazi",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-01-21T00:32:08Z",
+          "updatedAt": "2022-01-21T00:32:20Z",
+          "comments": [
+            {
+              "originalPosition": 21,
+              "body": "```suggestion\r\nServers SHOULD validate the originating version of any session ticket and reject\r\n```",
+              "createdAt": "2022-01-21T00:32:08Z",
+              "updatedAt": "2022-01-21T00:32:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4zMnXk",
+          "commit": {
+            "abbreviatedOid": "b860cbe"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "I'm not 100% firm on the server \"MUST\", but I really think we should consider it.",
+          "createdAt": "2022-01-21T00:39:54Z",
+          "updatedAt": "2022-01-21T00:50:21Z",
+          "comments": [
+            {
+              "originalPosition": 22,
+              "body": "```suggestion\r\nany ticket issued from a different version. This results in falling back to a\r\nfull TLS handshake, without 0-RTT.\r\n```",
+              "createdAt": "2022-01-21T00:39:54Z",
+              "updatedAt": "2022-01-21T00:50:21Z"
+            },
+            {
+              "originalPosition": 24,
+              "body": "```suggestion\r\nAfter compatible version negotiation, any resulting session ticket\r\n```",
+              "createdAt": "2022-01-21T00:40:27Z",
+              "updatedAt": "2022-01-21T00:50:21Z"
+            },
+            {
+              "originalPosition": 19,
+              "body": "\ud83d\udc4d I considered suggesting that you make this more generic: \"Clients MUST only use a ticket for a QUIC version in which the ticket was received\", but you aren't speaking for QUIC versions other than v1 and v2 here, so this is right.",
+              "createdAt": "2022-01-21T00:41:40Z",
+              "updatedAt": "2022-01-21T00:50:22Z"
+            },
+            {
+              "originalPosition": 21,
+              "body": "Here's the hard part...\r\n\r\n```suggestion\r\nServers MUST validate the originating version of any session ticket and not resume from\r\n```\r\n\r\nThe easy bit: rejection isn't really the right term to use.  It's not resuming.\r\n\r\nSecond, this is where the rubber hits the road.  The general strategy in TLS is to allow clients to attempt ticket use anywhere, on the understand that tickets won't be accepted by anything but the correct server.\r\n\r\nInsisting on clients doing the right thing is fairly easy, so I'm OK with the \"MUST\" above, but if you are going to do this right, the \"MUST\" really belongs on the server side.\r\n\r\nAs for concerns @huitema raised about being able to implement this, I don't see how you can avoid having the machinery necessary to implement some sort of application/transport state if you are supporting arbitrary application protocols - or 0-RTT.  As soon as you do 0-RTT, you need some way to reclaim state.  And many application protocols need some way to carry state across resumptions.  HTTP does.  You might be able to avoid it with very careful rotation of STEKs and other such tricks, but carrying state really is the easiest way.",
+              "createdAt": "2022-01-21T00:49:52Z",
+              "updatedAt": "2022-01-21T00:50:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4zMpQn",
+          "commit": {
+            "abbreviatedOid": "b860cbe"
+          },
+          "author": "DavidSchinazi",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-21T00:56:05Z",
+          "updatedAt": "2022-01-21T00:56:05Z",
+          "comments": [
+            {
+              "originalPosition": 21,
+              "body": "MT convinced me, let's make this a MUST.",
+              "createdAt": "2022-01-21T00:56:05Z",
+              "updatedAt": "2022-01-21T00:56:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4zQI9K",
+          "commit": {
+            "abbreviatedOid": "c8d90ff"
+          },
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-21T17:59:30Z",
+          "updatedAt": "2022-01-21T17:59:30Z",
+          "comments": [
+            {
+              "originalPosition": 19,
+              "body": "Aye, there's a pending \"considerations for v1\" section in the VN draft where this could live, but I'm happy to have this here as well.",
+              "createdAt": "2022-01-21T17:59:30Z",
+              "updatedAt": "2022-01-21T17:59:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4zQLmx",
+          "commit": {
+            "abbreviatedOid": "0f91cee"
+          },
+          "author": "DavidSchinazi",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2022-01-21T18:11:26Z",
+          "updatedAt": "2022-01-21T18:11:26Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "id": "PR_kwDOFX7TQc4xWp6-",
+      "title": "support v1 language",
+      "url": "https://github.com/quicwg/quic-v2/pull/38",
+      "state": "MERGED",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #35.\r\n\r\nThe original intent was to recommend compatible VN. But that doesn't make any sense: compatible VN is something that the server initiates between versions that are at least partially supported. The client doesn't really have any control except that it can omit versions from the TP.\r\n\r\nIncompatible VN cannot happen between mutually supported versions, and the client is in control.",
+      "createdAt": "2022-01-20T23:56:49Z",
+      "updatedAt": "2022-01-22T00:01:23Z",
+      "baseRepository": "quicwg/quic-v2",
+      "baseRefName": "main",
+      "baseRefOid": "c07e91ecdb0c294c62e9442b09642627b50c7366",
+      "headRepository": "quicwg/quic-v2",
+      "headRefName": "encourage-compat",
+      "headRefOid": "c6c7d9774718beb45e51e838d07d5ac5977e8401",
+      "closedAt": "2022-01-22T00:01:22Z",
+      "mergedAt": "2022-01-22T00:01:22Z",
+      "mergedBy": "martinduke",
+      "mergeCommit": {
+        "oid": "8ab85319f34c8347191cc49586f05edddff10190"
+      },
+      "comments": [
+        {
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@DavidSchinazi major rewrite that I think addresses your concerns. PTAL",
+          "createdAt": "2022-01-21T17:57:04Z",
+          "updatedAt": "2022-01-21T17:57:04Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFX7TQc4zMnBk",
+          "commit": {
+            "abbreviatedOid": "72180f0"
+          },
+          "author": "DavidSchinazi",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-21T00:36:56Z",
+          "updatedAt": "2022-01-21T00:38:10Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "I don't think saying anything about less common makes sense, we can't predict the future. This requirement comes from the fact that we kept the same Alt-Svc, so it makes sense to scope it to h3?",
+              "createdAt": "2022-01-21T00:36:56Z",
+              "updatedAt": "2022-01-21T00:38:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4zQKgj",
+          "commit": {
+            "abbreviatedOid": "e0a80f7"
+          },
+          "author": "DavidSchinazi",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-21T18:06:27Z",
+          "updatedAt": "2022-01-21T18:08:52Z",
+          "comments": [
+            {
+              "originalPosition": 27,
+              "body": "This paragraph is odd: servers won't drop support and maintain minimal initial parsing unless they're doing compatible VN. Perhaps:\r\n```suggestion\r\nIf a server supporting version 2 wishes to drop support for version 1, it SHOULD\r\nretain the ability to parse Initial packets from version 1 and support compatible\r\nnegotiation from version 1 to version 2; that will avoid the delay caused by\r\nincompatible version negotiation.\r\n```",
+              "createdAt": "2022-01-21T18:06:28Z",
+              "updatedAt": "2022-01-21T18:08:52Z"
+            },
+            {
+              "originalPosition": 13,
+              "body": "```suggestion\r\nnegotiation or TCP fallback. For example, an origin advertising support for \"h3\" in Alt-Svc\r\nSHOULD support QUIC version 1 as it was the original QUIC version used by HTTP/3 and\r\ntherefore some clients will only support that version.\r\n```",
+              "createdAt": "2022-01-21T18:08:41Z",
+              "updatedAt": "2022-01-21T18:08:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4zQNCi",
+          "commit": {
+            "abbreviatedOid": "e6d1aae"
+          },
+          "author": "martinduke",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-21T18:17:54Z",
+          "updatedAt": "2022-01-21T18:17:55Z",
+          "comments": [
+            {
+              "originalPosition": 27,
+              "body": "Yes, no one's going to \"drop\" v1 support. But someone could implement a server from scratch and only do v2. Similarly, the case where a v1 server decides to do the minimum to gracefully handle v2 seems really plausible to me.\r\n\r\nThere's plenty of text before that that says \"no really, don't delete your v1 code base\". The intent of this is to (1) raise partial support as a possibility, but (2) say that if you do, you SHOULD use compatible, not rely on incompatible.",
+              "createdAt": "2022-01-21T18:17:54Z",
+              "updatedAt": "2022-01-21T18:17:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4zQk1A",
+          "commit": {
+            "abbreviatedOid": "e6d1aae"
+          },
+          "author": "DavidSchinazi",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2022-01-21T20:10:17Z",
+          "updatedAt": "2022-01-21T20:10:17Z",
+          "comments": [
+            {
+              "originalPosition": 27,
+              "body": "But why would anyone do partial support but not compatible VN?",
+              "createdAt": "2022-01-21T20:10:17Z",
+              "updatedAt": "2022-01-21T20:10:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7TQc4zRH6U",
+          "commit": {
+            "abbreviatedOid": "c6c7d97"
+          },
+          "author": "DavidSchinazi",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Thanks for the discussion!",
+          "createdAt": "2022-01-21T23:59:36Z",
+          "updatedAt": "2022-01-21T23:59:36Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
