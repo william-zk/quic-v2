@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-01-23T00:26:35.359200+00:00",
+  "timestamp": "2022-01-27T00:26:47.571050+00:00",
   "repo": "quicwg/quic-v2",
   "labels": [
     {
@@ -682,7 +682,7 @@
       "labels": [],
       "body": "During the discussion of https://github.com/quicwg/version-negotiation/issues/68, we came to the conclusion that it was simplest and safest to ban TLS resumption across QUIC versions. The version negotiation draft will mention this, but without normative text because TLS is not a QUIC invariant. The QUICv2 draft should add normative text to explicitly ban resuming TLS across versions.",
       "createdAt": "2022-01-13T18:19:08Z",
-      "updatedAt": "2022-01-22T00:09:22Z",
+      "updatedAt": "2022-01-25T05:07:22Z",
       "closedAt": "2022-01-22T00:09:22Z",
       "comments": [
         {
@@ -733,6 +733,13 @@
           "body": "Outcome of offline discussion with @martinthomson and @DavidSchinazi:\r\n\r\n1) Clients MUST NOT use a resumption ticket from a QUIC connection and apply it to another version.\r\n\r\n2) Servers SHOULD validate that resumption tickets are not being used across QUIC versions and refuse to honor the ticket (or terminate the connection?) if they are.\r\n\r\n3) Make it clear that the resumption ticket from a connection that did compatible VN maps to the negotiated version, not the original one.",
           "createdAt": "2022-01-20T00:05:47Z",
           "updatedAt": "2022-01-20T00:05:47Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "MEMBER",
+          "body": "Wow, that was a fast shift back to \"SHOULD\".  I missed that.\r\n\r\nI did a little digging and it seems like there is a different determination for 0-RTT and resumption in our code.  Accepting 0-RTT is something that needs to be controlled, but resumption has no similar controls.  In that, we're in a similar position to @huitema.  We can't really stop resumption without first performing a little surgery on the TLS stack.\r\n\r\nWith that in mind, I'm conditionally OK with this resolution.  That's a purely pragmatic decision on my part on the basis that \"compatible\" in this case means not really changing anything about TLS.",
+          "createdAt": "2022-01-25T05:07:21Z",
+          "updatedAt": "2022-01-25T05:07:21Z"
         }
       ]
     },
@@ -750,6 +757,22 @@
       "createdAt": "2022-01-20T00:08:54Z",
       "updatedAt": "2022-01-22T00:01:22Z",
       "closedAt": "2022-01-22T00:01:22Z",
+      "comments": []
+    },
+    {
+      "number": 39,
+      "id": "I_kwDOFX7TQc5Cd28Q",
+      "title": "NEW-TOKEN tokens?",
+      "url": "https://github.com/quicwg/quic-v2/issues/39",
+      "state": "OPEN",
+      "author": "martinduke",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Are NEW_TOKEN tokens reusable across versions? On current patterns, probably not, but we should write it down.",
+      "createdAt": "2022-01-26T15:04:46Z",
+      "updatedAt": "2022-01-26T15:04:46Z",
+      "closedAt": null,
       "comments": []
     }
   ],
